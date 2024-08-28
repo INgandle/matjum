@@ -14,11 +14,13 @@
 - `npm install` 명령어로 의존성 패키지를 설치합니다.
 - `npm run docker:dev` 명령어로 데이터베이스 docker container 를 실행합니다.
   - `.env`파일의 `POSTGRES_*` 값을 읽어 database, user가 생성되니 따로 생성 안하셔도 됩니다.
+  - `docker compose up -f docker-compose.dev.yml` 으로 대체가능.
 - `npm run start` 명령어로 서버를 실행합니다.
 
 ## production 실행
 
 - `npm run docker:prod` 명령어로 데이터베이스 docker container 를 실행합니다.
+  - `docker-compose up` 으로 대체가능.
 
 ## 정상 실행 확인
 
@@ -50,3 +52,8 @@
   - `export PATH="/usr/local/opt/libpq/bin:$PATH"` (필요한 경우)
 - 접속은 `psql -h localhost -U <username> -d <database> -p <port>` 명령어로 가능합니다.
   - `username`과 `database`, `port`는 `.env` 파일의 `POSTGRES_USER`, `POSTGRES_DB`, `POSTGRES_PORT` 값과 동일해야 합니다.
+
+## 컨테이너 종료
+
+- `npm run docker:dev:down` 혹은 `npm run docker:prod:down` 명령어로 컨테이너를 종료할 수 있습니다.
+- `docker stop` 이나 `docker compose down -f <파일명>` 명령어로도 종료할 수 있습니다.

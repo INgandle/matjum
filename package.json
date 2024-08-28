@@ -20,7 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "docker:dev": "docker compose -f docker-compose.dev.yml up -d --build",
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
-    "docker:prod": "docker compose -f docker-compose.prod.yml up -d --build"
+    "docker:prod": "docker compose -f docker-compose.yml up -d --build",
+    "docker:prod:down": "docker compose -f docker-compose.yml down"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
