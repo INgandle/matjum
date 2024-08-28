@@ -32,7 +32,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'error', // any 사용시 경고
     'no-else-return': 'warn', // else 뒤에 바로 return 경고
     'import/order': [
-      // import 순서를 정렬해줍니다.
+      // import 순서 정렬
       'error',
       {
         alphabetize: {
