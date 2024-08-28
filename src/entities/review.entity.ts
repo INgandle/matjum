@@ -1,4 +1,5 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
+
 import { BaseModel } from './base-model.entity';
 import { Member } from './member.entity';
 import { Restaurant } from './restaurant.entity';

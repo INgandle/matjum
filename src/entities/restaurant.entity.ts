@@ -1,4 +1,5 @@
-import { Column, Entity, OneToMany, Unique, Point } from 'typeorm';
+import { Column, Entity, OneToMany, Unique } from 'typeorm';
+
 import { BaseModel } from './base-model.entity';
 import { Review } from './review.entity';
 

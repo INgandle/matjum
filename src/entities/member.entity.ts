@@ -1,4 +1,5 @@
 import { Column, Entity, OneToMany } from 'typeorm';
+
 import { BaseModel } from './base-model.entity';
 import { Review } from './review.entity';
 
