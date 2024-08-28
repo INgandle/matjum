@@ -14,6 +14,7 @@ import { Review } from './entities/review.entity';
       imports: [DatabaseConfigModule],
       useClass: DatabaseConfigService,
     }),
+    //FIXME: 테이블 생성을 위한 것으로 추후 삭제합니다.
     TypeOrmModule.forFeature([Member, Restaurant, Review]),
   ],
   controllers: [AppController],
