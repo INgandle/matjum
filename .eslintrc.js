@@ -12,7 +12,7 @@ module.exports = {
     node: true,
     jest: true,
   },
-  ignorePatterns: ['.eslintrc.js', '**/*.constants.ts', '**/*.decorator.ts'],
+  ignorePatterns: ['.eslintrc.js'],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -21,11 +21,17 @@ module.exports = {
     'func-style': ['error', 'expression'],
     '@typescript-eslint/naming-convention': [
       'error',
-      { selector: 'variableLike', format: ['camelCase'] },
+      { selector: 'variableLike', format: ['camelCase', 'UPPER_CASE'] },
       { selector: 'property', format: ['camelCase'] },
       { selector: 'class', format: ['PascalCase'] },
       { selector: 'classMethod', format: ['camelCase'] },
       { selector: 'objectLiteralMethod', format: ['camelCase'] },
+      {
+        // object literal proptery 에 UPPER_CASE 허용
+        // 사용 예: env, open api 데이터 Key
+        selector: 'objectLiteralProperty',
+        format: ['camelCase', 'UPPER_CASE'],
+      },
     ],
     'prettier/prettier': ['error', { endOfLine: 'auto' }],
     '@typescript-eslint/explicit-function-return-type': ['warn', { allowExpressions: true }], // 함수의 반환 타입 명시
@@ -40,6 +46,32 @@ module.exports = {
         },
         'newlines-between': 'always', // 그룹 별 newline 으로 구분
         //그룹은 기본 ["builtin", "external", "parent", "sibling", "index"] 순서입니다. 변경 가능
+      },
+    ],
+    overrides: [
+      {
+        files: ['**/*.constants.ts'],
+        rules: {
+          '@typescript-eslint/naming-convention': [
+            'error',
+            {
+              selector: 'variable',
+              format: ['camelCase', 'UPPER_CASE'],
+            },
+          ],
+        },
+      },
+      {
+        files: ['**/*.decorator.ts'],
+        rules: {
+          '@typescript-eslint/naming-convention': [
+            'error',
+            {
+              selector: 'variable',
+              format: ['camelCase', 'PascalCase'],
+            },
+          ],
+        },
       },
     ],
   },
