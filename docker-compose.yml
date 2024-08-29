@@ -2,7 +2,7 @@ services:
   db:
     container_name: matjum-db
     build:
-      context: ./Dockerfiles/postgis
+      context: ./Dockerfiles/db
     restart: always
     env_file:
       - .env
