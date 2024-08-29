@@ -11,7 +11,8 @@ export class Member extends BaseModel {
   @Column({ type: 'varchar', length: 128 })
   name: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  // 민감한 정보는 select: false로 설정하여 조회 시 제외
+  @Column({ type: 'varchar', length: 255, select: false })
   password: string;
 
   @Column({ type: 'real', nullable: true })
@@ -20,7 +21,7 @@ export class Member extends BaseModel {
   @Column({ type: 'real', nullable: true })
   lat: number;
 
-  @Column()
+  @Column({ default: false })
   isRecommendationEnabled: boolean;
 
   // 사용자가 작성한 리뷰
