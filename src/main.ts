@@ -12,6 +12,7 @@ const config = new DocumentBuilder()
 
 const bootstrap = async (): Promise<void> => {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('/api');
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
