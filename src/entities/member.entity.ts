@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany, Point } from 'typeorm';
 
 import { BaseModel } from './base-model.entity';
 import { Review } from './review.entity';
@@ -20,6 +20,13 @@ export class Member extends BaseModel {
 
   @Column({ type: 'real', nullable: true })
   lat: number;
+
+  /**
+   * 4326 - WGS 84 좌표계, 위도와 경도를 도(degrees) 단위로 표현함, 지구의 곡률을 고려하여 정확하게 거리를 계산하기 위해 필요함
+   * 기본값은 0, 평면 좌표계
+   * */
+  @Column({ type: 'geometry', nullable: true, srid: 4326 })
+  location: Point;
 
   @Column({ default: false })
   isRecommendationEnabled: boolean;
