@@ -48,33 +48,33 @@ module.exports = {
         //그룹은 기본 ["builtin", "external", "parent", "sibling", "index"] 순서입니다. 변경 가능
       },
     ],
-    overrides: [
-      {
-        files: ['**/*.constants.ts'],
-        rules: {
-          '@typescript-eslint/naming-convention': [
-            'error',
-            {
-              selector: 'variable',
-              format: ['camelCase', 'UPPER_CASE'],
-            },
-          ],
-        },
-      },
-      {
-        files: ['**/*.decorator.ts'],
-        rules: {
-          '@typescript-eslint/naming-convention': [
-            'error',
-            {
-              selector: 'variable',
-              format: ['camelCase', 'PascalCase'],
-            },
-          ],
-        },
-      },
-    ],
   },
+  overrides: [
+    {
+      files: ['**/*.constants.ts'],
+      rules: {
+        '@typescript-eslint/naming-convention': [
+          'error',
+          {
+            selector: 'variable',
+            format: ['camelCase', 'UPPER_CASE'],
+          },
+        ],
+      },
+    },
+    {
+      files: ['**/*.decorator.ts'],
+      rules: {
+        '@typescript-eslint/naming-convention': [
+          'error',
+          {
+            selector: 'variable',
+            format: ['camelCase', 'PascalCase'],
+          },
+        ],
+      },
+    },
+  ],
   settings: {
     'import/resolver': {
       node: {
