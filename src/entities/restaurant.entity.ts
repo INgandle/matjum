@@ -20,13 +20,13 @@ export class Restaurant extends BaseModel {
   address: string;
 
   // real: 실수형 데이터 타입, 4byte
-  @Column({ type: `real`, nullable: true })
+  @Column({ type: 'real', nullable: true })
   lon: number;
 
-  @Column({ type: `real`, nullable: true })
+  @Column({ type: 'real', nullable: true })
   lat: number;
 
-  @Column({ type: `real`, default: 0 }) // review 가 없을 경우 0으로 설정
+  @Column({ type: 'real', default: 0 }) // review 가 없을 경우 0으로 설정
   rating: number;
 
   // 맛집에 작성된 리뷰
