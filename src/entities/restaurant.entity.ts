@@ -19,13 +19,6 @@ export class Restaurant extends BaseModel {
   @Column({ type: 'varchar', length: 512, nullable: true })
   address: string;
 
-  // real: 실수형 데이터 타입, 4byte
-  @Column({ type: 'real', nullable: true })
-  lon: number;
-
-  @Column({ type: 'real', nullable: true })
-  lat: number;
-
   /**
    * 4326 - WGS 84 좌표계, 위도와 경도를 도(degrees) 단위로 표현함, 지구의 곡률을 고려하여 정확하게 거리를 계산하기 위해 필요함
    * 기본값은 0, 평면 좌표계
