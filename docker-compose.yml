@@ -1,6 +1,6 @@
 services:
   db:
-    container_name: matjum_db
+    container_name: matjum-db
     build:
       context: ./Dockerfiles/postgis
     restart: always
@@ -15,8 +15,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - matjum-network
   server:
-    container_name: matjum_server
+    container_name: matjum-server
     depends_on:
       db:
         condition: service_healthy
@@ -28,6 +30,13 @@ services:
       - '3000:3000'
     init: true
     restart: unless-stopped # 예기치 않은 종료 시 재시작
+    networks:
+      - matjum-network
 
 volumes:
   db_data:
+
+networks:
+  matjum-network:
+    name: matjum-network
+    driver: bridge
