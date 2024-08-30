@@ -1,7 +1,8 @@
 services:
   db:
-    container_name: matjum_db
-    image: postgres:16.4-alpine
+    container_name: matjum-db
+    build:
+      context: ./Dockerfiles/db
     restart: always
     env_file:
       - .env
@@ -14,20 +15,28 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - matjum-network
   server:
-    container_name: matjum_server
+    container_name: matjum-server
     depends_on:
       db:
         condition: service_healthy
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ./Dockerfiles/server
     env_file:
       - .env
     ports:
       - '3000:3000'
     init: true
     restart: unless-stopped # 예기치 않은 종료 시 재시작
+    networks:
+      - matjum-network
 
 volumes:
   db_data:
+
+networks:
+  matjum-network:
+    name: matjum-network
+    driver: bridge

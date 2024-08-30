@@ -55,5 +55,10 @@
 
 ## 컨테이너 종료
 
-- `npm run docker:dev:down` 혹은 `npm run docker:prod:down` 명령어로 컨테이너를 종료할 수 있습니다.
+- `npm run docker:dev:stop` 혹은 `npm run docker:prod:stop` 명령어로 컨테이너를 종료할 수 있습니다.
 - `docker stop` 이나 `docker compose down -f <파일명>` 명령어로도 종료할 수 있습니다.
+
+## docker volume 삭제해야 할 때 (DB 테이블 변경 등)
+
+- database 다 날아가니 주의해서 사용해주세요.
+- `docker volume rm matjum_db_data` 명령어로 삭제합니다.
