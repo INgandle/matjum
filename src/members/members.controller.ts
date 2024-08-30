@@ -33,7 +33,8 @@ export class MembersController {
    * @returns
    */
   @Post('sign-in')
-  async signIn(@Body() signInDto: SignInDto) {
+  @HttpCode(HttpStatus.OK)
+  async signIn(@Body() signInDto: SignInDto): Promise<{ accessToken: string; refreshToken: string }> {
     return this.authService.signIn(signInDto);
   }
   /**

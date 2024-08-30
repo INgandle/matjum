@@ -3,7 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Member } from 'src/entities/member.entity';
+
+import { Member } from '../entities/member.entity';
 
 import { JWT_ACCESS_EXPIRES_IN } from './auth.constants';
 import { AuthService } from './auth.service';

@@ -3,10 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { Member } from 'src/entities/member.entity';
-import { SignInDto } from 'src/members/dto/sign-in.dto';
-import { MembersService } from 'src/members/members.service';
 import { Repository } from 'typeorm';
+
+import { Member } from '../entities/member.entity';
+import { SignInDto } from '../members/dto/sign-in.dto';
 
 import { JWT_REFRESH_EXPIRES_IN } from './auth.constants';
 
