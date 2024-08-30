@@ -1,8 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { Cache } from 'cache-manager';
 import { Repository } from 'typeorm';
 
 import { Member } from '../entities/member.entity';
@@ -16,7 +17,7 @@ export class AuthService {
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
     private jwtService: JwtService,
-    private configService: ConfigService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   /**
@@ -54,7 +55,9 @@ export class AuthService {
       expiresIn: JWT_REFRESH_EXPIRES_IN,
     });
 
-    // TODO ) 리프레시 토큰 레디스 저장
+    //리프레시 토큰 레디스에 저장
+    //key: refresh_token:member.id, value: jwt 토큰 문자열
+    await this.cacheManager.set(`refresh_token:${member.id}`, refreshToken);
 
     return { accessToken, refreshToken };
   }
