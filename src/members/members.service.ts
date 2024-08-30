@@ -1,15 +1,43 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 
 import { Member } from '../entities/member.entity';
 
+import { CreateMemberDto } from './dto/create-member.dto';
 import { MemberResponseDto } from './dto/member-response.dto';
 import { UpdateMemberSettingsDto } from './dto/update-member-settings.dto';
+import { SALT_ROUNDS } from './member.constants';
 
 @Injectable()
 export class MembersService {
   constructor(@InjectRepository(Member) private readonly memberRepository: Repository<Member>) {}
+
+  /**
+   * 회원가입
+   * @param createMemberDto
+   */
+  async createMember(createMemberDto: CreateMemberDto): Promise<void> {
+    const { accountName, name, password } = createMemberDto;
+
+    //계정명 중복 확인
+    const existingMember = await this.memberRepository.findOneBy({ accountName });
+
+    if (existingMember) {
+      throw new ConflictException('Account name already exists');
+    }
+
+    //비밀번호 해싱
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+    //회원 데이터 insert
+    await this.memberRepository.insert({
+      accountName,
+      name,
+      password: hashedPassword,
+    });
+  }
 
   /**
    * id 경로 변수로 사용자를 찾아 반환합니다.

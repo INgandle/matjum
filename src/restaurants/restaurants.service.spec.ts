@@ -6,8 +6,6 @@ import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Restaurant } from '../entities/restaurant.entity';
 
 import { RestaurantsService } from './restaurants.service';
-import { OrderBy, RestaurantQueryDto } from './dto/restaurant-query.dto';
-import { RestaurantResponseDto } from './dto/restaurant-response.dto';
 
 describe('RestaurantsService', () => {
   let service: RestaurantsService;
