@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuthModule } from './auth/auth.module';
 import { DatabaseConfigModule } from './config/database/configuration.module';
 import { DatabaseConfigService } from './config/database/configuration.service';
 import { Member } from './entities/member.entity';
@@ -19,6 +20,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
     TypeOrmModule.forFeature([Member, Restaurant, Review]),
     MembersModule,
     RestaurantsModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
