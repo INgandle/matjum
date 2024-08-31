@@ -5,8 +5,8 @@ import { MemberResponseDto } from './dto/member-response.dto';
 import { UpdateMemberSettingsDto } from './dto/update-member-settings.dto';
 import { MembersService } from './members.service';
 
-@Controller('members')
 @ApiTags('members')
+@Controller('members')
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
