@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -13,6 +14,12 @@ const config = new DocumentBuilder()
 const bootstrap = async (): Promise<void> => {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('/api');
+  app.useGlobalPipes(
+    new ValidationPipe({
+      stopAtFirstError: true, // 맨 처음 발생한 하나의 에러만 반환 (나머지 검증 skip)
+      whitelist: true, // 없는 속성 제거
+    }),
+  );
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

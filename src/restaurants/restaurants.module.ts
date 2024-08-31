@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { Restaurant } from '../entities/restaurant.entity';
+import { Review } from '../entities/review.entity';
 
 import { RestaurantsController } from './restaurants.controller';
 import { RestaurantsService } from './restaurants.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Review } from 'src/entities/review.entity';
-import { Restaurant } from 'src/entities/restaurant.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Review, Restaurant])],

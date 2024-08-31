@@ -7,6 +7,7 @@ import { Member } from './entities/member.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { Review } from './entities/review.entity';
 import { MembersModule } from './members/members.module';
+import { RestaurantsModule } from './restaurants/restaurants.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { MembersModule } from './members/members.module';
     //FIXME: 테이블 생성을 위한 것으로 추후 삭제합니다.
     TypeOrmModule.forFeature([Member, Restaurant, Review]),
     MembersModule,
+    RestaurantsModule,
   ],
 })
 export class AppModule {}

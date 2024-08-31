@@ -6,6 +6,7 @@ import { Restaurant } from '../entities/restaurant.entity';
 import { Review } from '../entities/review.entity';
 
 import { CreateReviewDto } from './dto/create-review.dto';
+import { RestaurantQueryDto } from './dto/restaurant-query.dto';
 
 @Injectable()
 export class RestaurantsService {
@@ -66,5 +67,32 @@ export class RestaurantsService {
     const updatedRating = +averageOfRatings.toFixed(1);
 
     this.restaurantRepository.update({ id }, { rating: updatedRating });
+  }
+
+  async findList(options: RestaurantQueryDto): Promise<Restaurant[]> {
+    const result = await this.restaurantRepository
+      .createQueryBuilder('r')
+      .select([
+        'r.id as id',
+        'r.name as name',
+        'r.address as address',
+        'r.phoneNumber as phoneNumber',
+        'r.category as category',
+        'r.rating as rating',
+        `ST_X(r.location) as lat`,
+        `ST_Y(r.location) as lon`,
+        `ST_Distance(ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography, r.location::geography) as distance`,
+      ])
+      .where(`ST_DWithin(ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography, r.location::geography, :range)`, {
+        lon: options.lon,
+        lat: options.lat,
+        range: options.range,
+      })
+      .orderBy(options.orderBy, options.sortBy)
+      .skip(options.page * options.pageSize)
+      .take(options.pageSize)
+      .getRawMany();
+
+    return result;
   }
 }
