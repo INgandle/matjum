@@ -1,18 +1,20 @@
-import { Controller, Post, Body, Param, Res, HttpStatus, Req } from '@nestjs/common';
+import { Controller, Post, Body, Param, Res, HttpStatus, Req, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 
 import { Member } from '../entities/member.entity';
+import { Restaurant } from '../entities/restaurant.entity';
 
 import { CreateReviewDto } from './dto/create-review.dto';
+import { RestaurantQueryDto } from './dto/restaurant-query.dto';
 import { RestaurantsService } from './restaurants.service';
 
 export type MemberRequest = Request & {
   member: Member;
 };
 
-@ApiTags('restaurants')
 @Controller('restaurants')
+@ApiTags('restaurants')
 export class RestaurantsController {
   constructor(private readonly restaurantsService: RestaurantsService) {}
 
@@ -35,5 +37,20 @@ export class RestaurantsController {
     const location = `${req.path}/${review.id}`;
 
     return res.status(HttpStatus.CREATED).setHeader('Location', location).json({ id: review.id });
+  }
+
+  @Get()
+  async findList(@Query() queries: RestaurantQueryDto): Promise<Restaurant[]> {
+    const restaurants = await this.restaurantsService.findList({
+      lon: queries.lon,
+      lat: queries.lat,
+      range: queries.range,
+      sortBy: queries.sortBy,
+      orderBy: queries.orderBy,
+      page: queries.page,
+      pageSize: queries.pageSize,
+    });
+
+    return restaurants;
   }
 }
