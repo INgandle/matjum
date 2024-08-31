@@ -1,6 +1,6 @@
 import { IsBoolean, IsLatitude, IsLongitude, IsNotEmpty } from 'class-validator';
 
-export class UpdateMemberDto {
+export class UpdateMemberSettingsDto {
   /**
    * 사용자의 위도
    * @example 37.564625

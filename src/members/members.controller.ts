@@ -2,7 +2,7 @@ import { Controller, Get, Body, Patch, Param, HttpStatus, HttpCode } from '@nest
 import { ApiTags } from '@nestjs/swagger';
 
 import { MemberResponseDto } from './dto/member-response.dto';
-import { UpdateMemberDto } from './dto/update-member.dto';
+import { UpdateMemberSettingsDto } from './dto/update-member-settings.dto';
 import { MembersService } from './members.service';
 
 @Controller('members')
@@ -23,11 +23,11 @@ export class MembersController {
   /**
    * 사용자 설정 업데이트 API
    * @param id 사용자 PK
-   * @param updateMemberDto 업데이트 할 정보
+   * @param UpdateMemberSettingsDto 업데이트 할 정보
    */
   @Patch(':id/settings')
   @HttpCode(HttpStatus.NO_CONTENT)
-  updateSettings(@Param('id') id: string, @Body() updateMemberDto: UpdateMemberDto): void {
-    this.membersService.updateSettings(id, updateMemberDto);
+  updateSettings(@Param('id') id: string, @Body() updateMemberSettingsDto: UpdateMemberSettingsDto): void {
+    this.membersService.updateSettings(id, updateMemberSettingsDto);
   }
 }

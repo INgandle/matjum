@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { Member } from '../entities/member.entity';
 
 import { MemberResponseDto } from './dto/member-response.dto';
-import { UpdateMemberDto } from './dto/update-member.dto';
+import { UpdateMemberSettingsDto } from './dto/update-member-settings.dto';
 
 @Injectable()
 export class MembersService {
@@ -37,8 +37,8 @@ export class MembersService {
    * @param id 사용자 PK
    * @param updateMemberDto 업데이트 할 정보
    */
-  async updateSettings(id: string, updateMemberDto: UpdateMemberDto): Promise<void> {
-    const { lon, lat, isRecommendationEnabled } = updateMemberDto;
+  async updateSettings(id: string, updateMemberSettingsDto: UpdateMemberSettingsDto): Promise<void> {
+    const { lon, lat, isRecommendationEnabled } = updateMemberSettingsDto;
 
     // 사용자 not found 예외처리
     await this.findMemberById(id);
