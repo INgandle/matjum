@@ -3,7 +3,10 @@ import { faker } from '@faker-js/faker';
 import { BaseModelFactory } from './base-model.factory';
 
 export const restaurantFactory = () => {
-  const location = { type: 'Point', coordinates: [faker.location.longitude(), faker.location.latitude()] };
+  const location = {
+    type: 'Point',
+    coordinates: [faker.location.longitude({ min: 126, max: 128 }), faker.location.latitude({ min: 36, max: 38 })],
+  };
   return {
     ...BaseModelFactory(),
     name: faker.string.alphanumeric({ length: { min: 10, max: 40 } }),
