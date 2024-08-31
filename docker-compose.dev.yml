@@ -1,6 +1,6 @@
 services:
   db:
-    container_name: matjum_db
+    container_name: matjum-db
     build:
       context: ./Dockerfiles/db
     restart: always
