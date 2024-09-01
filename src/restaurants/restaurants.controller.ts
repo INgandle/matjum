@@ -7,6 +7,7 @@ import { Restaurant } from '../entities/restaurant.entity';
 
 import { CreateReviewDto } from './dto/create-review.dto';
 import { RestaurantQueryDto } from './dto/restaurant-query.dto';
+import { RestaurantResponseDto } from './dto/restaurant-response.dto';
 import { RestaurantsService } from './restaurants.service';
 
 export type MemberRequest = Request & {
@@ -45,7 +46,7 @@ export class RestaurantsController {
    * @returns 맛집 목록
    */
   @Get()
-  async findList(@Query() queries: RestaurantQueryDto): Promise<Restaurant[]> {
+  async findList(@Query() queries: RestaurantQueryDto): Promise<RestaurantResponseDto[]> {
     const restaurants = await this.restaurantsService.findList({
       lon: queries.lon,
       lat: queries.lat,
@@ -65,7 +66,7 @@ export class RestaurantsController {
    * @returns 리뷰를 포함한 맛집 상세 정보
    */
   @Get(':id')
-  async findOneDetail(@Param('id') id: string): Promise<Restaurant | null> {
+  async findOneDetail(@Param('id') id: string): Promise<RestaurantResponseDto | null> {
     const restaurant = await this.restaurantsService.findOneDetail(id);
 
     return restaurant;

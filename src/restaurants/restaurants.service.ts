@@ -8,6 +8,7 @@ import { Review } from '../entities/review.entity';
 
 import { CreateReviewDto } from './dto/create-review.dto';
 import { RestaurantQueryDto } from './dto/restaurant-query.dto';
+import { RestaurantResponseDto } from './dto/restaurant-response.dto';
 
 @Injectable()
 export class RestaurantsService {
@@ -75,18 +76,18 @@ export class RestaurantsService {
    * @param options 검색 조건
    * @returns 맛집 배열
    */
-  async findList(options: RestaurantQueryDto): Promise<Restaurant[]> {
+  async findList(options: RestaurantQueryDto): Promise<RestaurantResponseDto[]> {
     const result = await this.restaurantRepository
-      .createQueryBuilder('r')
+      .createQueryBuilder()
       .select([
-        'r.id as id',
-        'r.name as name',
-        'r.address as address',
-        'r.phoneNumber as phoneNumber',
-        'r.category as category',
-        'r.rating as rating',
-        `ST_X(r.location) as lat`,
-        `ST_Y(r.location) as lon`,
+        'id',
+        'name',
+        'address',
+        'phone_number',
+        'category',
+        'rating',
+        `ST_X(location) as lat`,
+        `ST_Y(location) as lon`,
         `ST_Distance(ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography, r.location::geography) as distance`,
       ])
       .where(`ST_DWithin(ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography, r.location::geography, :range)`, {
@@ -107,30 +108,28 @@ export class RestaurantsService {
    * @param id 맛집 id
    * @returns 리뷰를 포함한 맛집 정보
    */
-  async findOneDetail(id: string): Promise<Restaurant | null> {
+  async findOneDetail(id: string): Promise<RestaurantResponseDto | null> {
     if (isUUID(id) === false) {
       throw new BadRequestException('Invalid id');
     }
 
-    const result = await this.restaurantRepository.findOne({
-      where: { id },
-      relations: ['reviews'],
-      select: {
-        id: true,
-        name: true,
-        category: true,
-        phoneNumber: true,
-        address: true,
-        rating: true,
-        reviews: {
-          id: true,
-          content: true,
-          rating: true,
-          memberId: true,
-          restaurantId: true,
-        },
-      },
-    });
+    const result = await this.restaurantRepository
+      .createQueryBuilder('r')
+      .select([
+        'r.id as id',
+        'name as name',
+        'address',
+        'phone_number',
+        'category',
+        'r.rating as rating',
+        `ST_X(location) as lat`,
+        `ST_Y(location) as lon`,
+        `json_agg(json_build_object('id', review.id, 'content', review.content, 'rating', review.rating)) as reviews`,
+      ])
+      .leftJoin('r.reviews', 'review')
+      .where('r.id = :id', { id })
+      .groupBy('r.id')
+      .getRawOne();
 
     if (result === null) {
       throw new NotFoundException('Restaurant not found');
