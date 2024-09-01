@@ -7,9 +7,9 @@ import { Member } from '../entities/member.entity';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { RestaurantsService } from './restaurants.service';
 
-interface MemberRequest extends Request {
+type MemberRequest = Request & {
   member: Member;
-}
+};
 
 @ApiTags('restaurants')
 @Controller('restaurants')

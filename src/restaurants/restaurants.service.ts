@@ -55,23 +55,16 @@ export class RestaurantsService {
     const review = await this.reviewRepository.findOneBy({ memberId, restaurantId });
 
     if (review !== null) {
-      throw new ConflictException('already reviewd');
+      throw new ConflictException('already reviewed');
     }
   }
 
   // 맛집의 모든 리뷰 기록을 조회하고, 평균을 계산하여 평점을 업데이트 합니다.
   private async updateRestaurantRating(id: string): Promise<void> {
-    const { sum, count } = (
-      await this.reviewRepository
-        .createQueryBuilder('review')
-        .select('COUNT(*) as count, SUM(rating) as sum')
-        .where('review.restaurantId = :id', { id })
-        .groupBy('review.restaurantId')
-        .execute()
-    )[0];
-
+    const averageOfRatings = await this.reviewRepository.average('rating', { restaurantId: id });
     // 소수점 한 자리까지만 나오도록
-    const updatedRating = (sum / count).toFixed(1);
+    const updatedRating = averageOfRatings.toFixed(1);
+
     this.restaurantRepository.update({ id: id }, { rating: +updatedRating });
   }
 }
