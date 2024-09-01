@@ -31,7 +31,7 @@ export class AuthService {
     //사용자 검증 => 공격자에게 추가 정보를 제공하지 않기위해 401 상태 코드 반환
     const member = await this.memberRepository.findOne({
       where: { accountName },
-      select: ['id', 'accountName', 'password'], // 비밀번호 필드를 명시적으로 포함시킴
+      select: ['id', 'accountName', 'password', 'name'], // 비밀번호 필드를 명시적으로 포함시킴
     });
 
     if (member === null) {
@@ -45,7 +45,7 @@ export class AuthService {
     }
 
     // 토큰 페이로드 설정
-    const payload = { sub: member.id, accountName: member.accountName };
+    const payload = { sub: member.id, accountName: member.accountName, name: member.name };
 
     // 액세스 토큰 생성
     const accessToken = this.jwtService.sign(payload);

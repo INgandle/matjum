@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, HttpStatus, HttpCode } from 
 import { ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from '../auth/auth.service';
+import { Public } from '../auth/decorators/public.decorator';
 
 import { CreateMemberDto } from './dto/create-member.dto';
 import { MemberResponseDto } from './dto/member-response.dto';
@@ -21,6 +22,8 @@ export class MembersController {
    * @param createMemberDto
    * @returns
    */
+
+  @Public()
   @Post('sign-up')
   @HttpCode(HttpStatus.NO_CONTENT) // 성공 204
   async createMember(@Body() createMemberDto: CreateMemberDto): Promise<void> {
@@ -32,6 +35,7 @@ export class MembersController {
    * @param signInDto
    * @returns
    */
+  @Public()
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
   async signIn(@Body() signInDto: SignInDto): Promise<{ accessToken: string; refreshToken: string }> {
