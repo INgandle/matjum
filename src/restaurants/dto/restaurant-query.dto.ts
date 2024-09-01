@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional } from 'class-validator';
+import { IsEnum, IsLatitude, IsLongitude, IsNumber, IsOptional } from 'class-validator';
 
 enum OrderBy {
   DISTANCE = 'distance',
@@ -12,14 +12,26 @@ enum SortBy {
 }
 
 export class RestaurantQueryDto {
-  @IsNumber()
+  /**
+   * 경도
+   * @example 126.9530
+   */
+  @IsLongitude()
   @Type(() => Number)
   readonly lon: number;
 
-  @IsNumber()
+  /**
+   * 위도
+   * @example 37.5616
+   */
+  @IsLatitude()
   @Type(() => Number)
   readonly lat: number;
 
+  /**
+   * 범위
+   * @example 200000
+   */
   @IsNumber()
   @Type(() => Number)
   readonly range: number;
