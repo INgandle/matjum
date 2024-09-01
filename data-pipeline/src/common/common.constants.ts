@@ -1,4 +1,6 @@
 import { config } from 'dotenv';
+import { DataSourceOptions } from 'typeorm';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 config();
 
@@ -9,10 +11,23 @@ export const SEOUL_API_OPTIONS = {
   service: 'LOCALDATA_072404',
 };
 
+export const databaseOptions: DataSourceOptions = {
+  type: 'postgres',
+  host: process.env.POSTGRES_HOST,
+  port: parseInt(process.env.POSTGRES_PORT, 10),
+  username: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB,
+  entities: ['./src/entities/*.ts'],
+  synchronize: true,
+  logging: true,
+  namingStrategy: new SnakeNamingStrategy(),
+};
+
 /**
  * 필요없는 카테고리 리스트
  */
-export const EXCLUDE_CATEGORY_SET = new Set([
+export const excludeCategorySet = new Set([
   '이동조리',
   '출장조리',
   '키즈카페',

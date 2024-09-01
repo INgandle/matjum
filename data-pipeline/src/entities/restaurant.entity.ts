@@ -1,11 +1,21 @@
-import { Column, Entity, OneToMany, Point, Unique } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Point, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 
-import { BaseModel } from './base-model.entity';
-import { Review } from './review.entity';
-
+/**
+ * data-pipeline에서 사용하는 restaurant 엔티티
+ */
 @Entity()
 @Unique(['name', 'address']) // { name, address }가 같은 맛집은 중복으로 등록되지 않도록 설정
-export class Restaurant extends BaseModel {
+export class Restaurant {
+  // insert 이전에 uuid를 생성하여 넣어준다.
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
@@ -32,8 +42,4 @@ export class Restaurant extends BaseModel {
   // api 서버에서 업데이트 된 시간 - lastModTs
   @Column()
   lastModTs: Date;
-
-  // 맛집에 작성된 리뷰
-  @OneToMany(() => Review, (review) => review.restaurant)
-  reviews: Review[];
 }

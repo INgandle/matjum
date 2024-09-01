@@ -8,9 +8,9 @@ import { join } from 'path';
 
 import { XMLParser, X2jOptions } from 'fast-xml-parser';
 
-import { RawData } from './types/raw-data.type';
+import { excludeCategorySet } from './common/common.constants';
 import { ProcessedData } from './types/processed-data.type';
-import { EXCLUDE_CATEGORY_SET } from './common/common.constants';
+import { RawData } from './types/raw-data.type';
 
 // 전역 변수
 const options: X2jOptions = {
@@ -42,21 +42,22 @@ const formatAddress = (siteWhlAddr: string, rdnWhlAddr: string): string => {
 
 /**
  * 데이터를 가공하여 반환
+ * undefined 를 이용해 name, address가 겹치는 경우에 ''이 아닌 필드만 업데이트 한다.
  *
  * @param data
  * @returns
  */
-const dataFormatting = (data: RawData[]): ProcessedData[] => {
-  const processed: ProcessedData[] = data.reduce((acc: ProcessedData[], item: RawData) => {
+const dataFormatting = (data: RawData[]): Partial<ProcessedData>[] => {
+  const processed: Partial<ProcessedData>[] = data.reduce((acc: ProcessedData[], item: RawData) => {
     // 제외 카테고리에 포함되지 않는 항목만 처리
-    if (!EXCLUDE_CATEGORY_SET.has(item.uptaeNm)) {
+    if (!excludeCategorySet.has(item.uptaeNm)) {
       acc.push({
         name: item.bplcNm,
         address: formatAddress(item.siteWhlAddr, item.rdnWhlAddr),
-        category: item.uptaeNm === ' ' || !item.uptaeNm ? '미분류' : item.uptaeNm,
-        phoneNumber: item.siteTel,
-        x: item.x,
-        y: item.y,
+        category: item.uptaeNm === '' ? undefined : item.uptaeNm,
+        phoneNumber: item.siteTel === '' ? undefined : item.siteTel,
+        x: item.x === '' ? undefined : item.x,
+        y: item.y === '' ? undefined : item.y,
         lastModTs: item.lastModTs,
       });
     }
@@ -72,7 +73,7 @@ const dataFormatting = (data: RawData[]): ProcessedData[] => {
  * @param filePath
  * @returns
  */
-const readFile = async (filePath: string): Promise<ProcessedData[]> => {
+const readFile = async (filePath: string): Promise<Partial<ProcessedData>[]> => {
   try {
     const content = await fs.readFile(filePath, 'utf-8');
     console.log(`Successfully read file: ${filePath}`);
@@ -89,14 +90,14 @@ const readFile = async (filePath: string): Promise<ProcessedData[]> => {
  * @param fileNames
  * @returns
  */
-const readMultipleFiles = async (fileNames: string[]): Promise<ProcessedData[][]> => {
+const readMultipleFiles = async (fileNames: string[]): Promise<Partial<ProcessedData>[]> => {
   const filePaths = fileNames.map((fileName) => join(__dirname, '..', 'data', fileName));
 
   try {
     // Promise.all을 사용하여 병렬로 처리
     const fileContents = await Promise.all(filePaths.map(readFile));
     console.log('All files have been read successfully');
-    return fileContents;
+    return fileContents.flat();
   } catch (error) {
     console.error('Error reading one or more files:', error);
     throw error;
@@ -107,7 +108,7 @@ const readMultipleFiles = async (fileNames: string[]): Promise<ProcessedData[][]
  * xml 파일들을 읽어 가공하여 반환
  * @returns
  */
-const processingRawXML = async () => {
+const processingRawXML = async (): Promise<Partial<ProcessedData>[]> => {
   // TODO: 파일명 정리
   const fileNames = [
     'seoul_20200801-20240831.xml',
@@ -119,12 +120,8 @@ const processingRawXML = async () => {
   ];
 
   const results = await readMultipleFiles(fileNames);
-  results.forEach((result, index) => {
-    console.log(`File ${fileNames[index]}:`, result.length, 'items');
-  });
-  const flatResults = results.flat();
-  console.log(flatResults.length, 'items in total');
-  return flatResults;
+  console.log(results.length, 'items in total');
+  return results;
 };
 
 export default processingRawXML;

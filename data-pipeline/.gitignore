@@ -1,4 +1,7 @@
+# data-pipeline
 **/*.xml
+docs
+
 
 # Logs
 logs
