@@ -14,6 +14,13 @@ export class RestaurantsService {
     @InjectRepository(Restaurant) private readonly restaurantRepository: Repository<Restaurant>,
   ) {}
 
+  /**
+   * 사용자가 특정 맛집에 리뷰를 생성합니다. 리뷰가 생성되면 해당 맛집의 평점을 업데이트 합니다.
+   * @param createReviewDto 생성할 리뷰의 내용, 평점
+   * @param restaurantId 리뷰를 생성할 맛집의 PK
+   * @param memberId 리뷰를 생성하는 사용자의 PK
+   * @returns 생성된 리뷰의 id
+   */
   async createReview(
     createReviewDto: CreateReviewDto,
     restaurantId: string,

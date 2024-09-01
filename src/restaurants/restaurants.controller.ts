@@ -1,4 +1,5 @@
 import { Controller, Post, Body, Param, Res, HttpStatus, Req } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 
 import { Member } from '../entities/member.entity';
@@ -10,10 +11,19 @@ interface MemberRequest extends Request {
   member: Member;
 }
 
+@ApiTags('restaurants')
 @Controller('restaurants')
 export class RestaurantsController {
   constructor(private readonly restaurantsService: RestaurantsService) {}
 
+  /**
+   * 리뷰 생성 API
+   * @param createReviewDto 생성할 리뷰의 내용, 평점
+   * @param restaurantId 경로변수, 리뷰를 생성할 맛집의 PK
+   * @param req 사용자 객체가 포함된 Request 객체
+   * @param res Response 객체
+   * @returns Location 헤더와 생성된 리뷰 id 바디를 포함하는 Response 객체
+   */
   @Post(':id/reviews')
   async createReview(
     @Body() createReviewDto: CreateReviewDto,
