@@ -39,6 +39,11 @@ export class RestaurantsController {
     return res.status(HttpStatus.CREATED).setHeader('Location', location).json({ id: review.id });
   }
 
+  /*
+   * 특정 위치를 기준으로 일정 거리 안에 있는 맛집들을 조회합니다.
+   * @param queries 검색 조건
+   * @returns 맛집 목록
+   */
   @Get()
   async findList(@Query() queries: RestaurantQueryDto): Promise<Restaurant[]> {
     const restaurants = await this.restaurantsService.findList({
@@ -54,6 +59,11 @@ export class RestaurantsController {
     return restaurants;
   }
 
+  /**
+   * 맛집id를 통해 맛집의 상세 정보를 조회합니다.
+   * @param id 맛집 id
+   * @returns 리뷰를 포함한 맛집 상세 정보
+   */
   @Get(':id')
   async findOneDetail(@Param('id') id: string): Promise<Restaurant | null> {
     const restaurant = await this.restaurantsService.findOneDetail(id);
