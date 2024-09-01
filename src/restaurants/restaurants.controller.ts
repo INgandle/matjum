@@ -53,4 +53,11 @@ export class RestaurantsController {
 
     return restaurants;
   }
+
+  @Get(':id')
+  async findOneDetail(@Param('id') id: string): Promise<Restaurant | null> {
+    const restaurant = await this.restaurantsService.findOneDetail(id);
+
+    return restaurant;
+  }
 }

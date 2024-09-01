@@ -1,5 +1,6 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { isUUID } from 'class-validator';
 import { Repository } from 'typeorm';
 
 import { Restaurant } from '../entities/restaurant.entity';
@@ -92,6 +93,38 @@ export class RestaurantsService {
       .skip(options.page * options.pageSize)
       .take(options.pageSize)
       .getRawMany();
+
+    return result;
+  }
+
+  async findOneDetail(id: string): Promise<Restaurant | null> {
+    if (isUUID(id) === false) {
+      throw new BadRequestException('Invalid id');
+    }
+
+    const result = await this.restaurantRepository.findOne({
+      where: { id },
+      relations: ['reviews'],
+      select: {
+        id: true,
+        name: true,
+        category: true,
+        phoneNumber: true,
+        address: true,
+        rating: true,
+        reviews: {
+          id: true,
+          content: true,
+          rating: true,
+          memberId: true,
+          restaurantId: true,
+        },
+      },
+    });
+
+    if (result === null) {
+      throw new NotFoundException('Restaurant not found');
+    }
 
     return result;
   }
