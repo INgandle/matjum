@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD, Reflector } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from './auth/auth.module';
+import { DevAuthGuard } from './auth/guards/dev-auth.guard';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { DatabaseConfigModule } from './config/database/configuration.module';
 import { DatabaseConfigService } from './config/database/configuration.service';
@@ -23,11 +25,15 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
     MembersModule,
     RestaurantsModule,
     AuthModule,
+    ConfigModule,
   ],
   providers: [
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
+      useFactory: (configService: ConfigService) => {
+        return configService.get('NODE_ENV') === 'development' ? new DevAuthGuard() : new JwtAuthGuard(new Reflector());
+      },
+      inject: [ConfigService],
     },
   ],
 })

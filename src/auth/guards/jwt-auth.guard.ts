@@ -22,10 +22,20 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   // TUser 제네릭을 사용하여 기본값을 JwtUser로 설정
   // JwtUser 타입을 기본으로 사용하면서도 필요에 따라 다른 타입 지원 가능
-  handleRequest<TUser extends JwtUser = JwtUser>(err: Error, user: TUser | false): TUser {
+  handleRequest<TUser extends JwtUser = JwtUser>(
+    err: Error | null,
+    user: TUser | false | null,
+    info: string | undefined,
+    context: ExecutionContext,
+  ): TUser {
     if (err || !user) {
       throw new UnauthorizedException('Authentication failed');
     }
+
+    // 요청 객체에 사용자 정보 추가
+    const request = context.switchToHttp().getRequest();
+    request.user = user;
+
     return user as TUser;
   }
 }
