@@ -70,6 +70,11 @@ export class RestaurantsService {
     this.restaurantRepository.update({ id }, { rating: updatedRating });
   }
 
+  /*
+   * 특정 위치를 기준으로 일정 거리 안에 있는 맛집들을 조회합니다.
+   * @param options 검색 조건
+   * @returns 맛집 배열
+   */
   async findList(options: RestaurantQueryDto): Promise<Restaurant[]> {
     const result = await this.restaurantRepository
       .createQueryBuilder('r')
@@ -97,6 +102,11 @@ export class RestaurantsService {
     return result;
   }
 
+  /**
+   * 맛집id를 통해 맛집의 상세 정보를 조회합니다.
+   * @param id 맛집 id
+   * @returns 리뷰를 포함한 맛집 정보
+   */
   async findOneDetail(id: string): Promise<Restaurant | null> {
     if (isUUID(id) === false) {
       throw new BadRequestException('Invalid id');
