@@ -7,7 +7,7 @@ import { Member } from '../entities/member.entity';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { RestaurantsService } from './restaurants.service';
 
-type MemberRequest = Request & {
+export type MemberRequest = Request & {
   member: Member;
 };
 

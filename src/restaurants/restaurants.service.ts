@@ -55,7 +55,7 @@ export class RestaurantsService {
     const review = await this.reviewRepository.findOneBy({ memberId, restaurantId });
 
     if (review !== null) {
-      throw new ConflictException('already reviewed');
+      throw new ConflictException('Already reviewed');
     }
   }
 
@@ -63,8 +63,8 @@ export class RestaurantsService {
   private async updateRestaurantRating(id: string): Promise<void> {
     const averageOfRatings = await this.reviewRepository.average('rating', { restaurantId: id });
     // 소수점 한 자리까지만 나오도록
-    const updatedRating = averageOfRatings.toFixed(1);
+    const updatedRating = +averageOfRatings.toFixed(1);
 
-    this.restaurantRepository.update({ id: id }, { rating: +updatedRating });
+    this.restaurantRepository.update({ id }, { rating: updatedRating });
   }
 }
