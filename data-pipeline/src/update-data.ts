@@ -7,6 +7,7 @@ import { localCodes } from './common/common.constants';
 import { Restaurant } from './entities/restaurant.entity';
 import { createDataSource } from './insert-data';
 import { APIResponse } from './types/api-response.type';
+import { QueryParam } from './types/query-param.type';
 
 /**
  * 한국 표준시로 변환, YYYYMMDD 형식으로 반환
@@ -49,23 +50,50 @@ const getRecentUpdate = async (dataSource: DataSource) => {
   return result.lastModTs;
 };
 
+const createRequest = async (
+  url: string,
+  baseQueryParams: Omit<QueryParam, 'localCode' | 'opnSvcId'>,
+  localCode: number,
+  opnSvcId: string,
+) => {
+  const queryParams = { ...baseQueryParams, localCode, opnSvcId };
+  try {
+    const data: APIResponse = await fetchData(url, queryParams);
+    if (data.result.header.process.code !== '00') {
+      throw new Error(`API request failed: ${data.result.header.process.message}`);
+    }
+    console.log(JSON.stringify(data.result.header));
+    console.log(
+      queryParams.localCode === 6110000 ? '서울 :' : '경기 :',
+      queryParams.opnSvcId === '07_24_04_P' ? '일반음식점' : '휴게음식점',
+      data.result.header.paging.totalCount,
+    );
+    if (data.result.header.paging.totalCount > 500) {
+      // 나머지 데이터 가져오기 위해 어딘가에 push
+    }
+
+    return {
+      url: url,
+      totalCount: data.result.header.paging.totalCount,
+      data: data.result.body.rows[0].row,
+    };
+  } catch (e) {
+    return { e: e as Error };
+  }
+};
 /**
  *
  * @param url \
  * @param queryParams
  * @returns
  */
-const fetchData = async (url: string, queryParams) => {
-  const params = new URLSearchParams(queryParams); // 헐 이런게;;
+const fetchData = async (url: string, queryParams): Promise<APIResponse> => {
+  const params = new URLSearchParams(queryParams);
   const fullUrl = `${url}?${params}`;
-
-  console.log(fullUrl);
 
   // 200 ok , code(00)
   const response = await fetch(fullUrl);
-  const data = await response.json();
-
-  return data;
+  return response.json();
 };
 
 const updateData = async () => {
@@ -80,52 +108,29 @@ const updateData = async () => {
   // 시간을 정할 수 없으므로 최근 업데이트 된 날짜 당일로 설정
   const lastUpdate = convertDateToKST(lastModTs);
 
-  const regionCodeArray = Object.entries(localCodes).flatMap(([province, districts]) =>
-    Object.entries(districts).map(([district, code]) => ({ province, district, code })),
-  );
-
   const url = 'http://www.localdata.go.kr/platform/rest/GR0/openDataApi';
+  const localCodeArray = Object.values(localCodes);
 
-  const baseQueryParams = {
+  const baseQueryParams: Omit<QueryParam, 'localCode' | 'opnSvcId'> = {
     authKey: process.env.API_KEY,
-    //localCode: '3010000', // 서울, 경기 (시군구 돌면서 차례로..)
     lastModTsBgn: lastUpdate, // 전 월의 24일까지 가능.
     lastModTsEnd: today,
     state: '01', // 영업중
     pageIndex: '1',
     pageSize: '500', // 개발용 : 500, 운영용 : 10000 max
     resultType: 'json',
-    //opnSvcId: '07_24_04_P',
   };
 
-  const requests = regionCodeArray.flatMap((region) =>
-    opnSvcIdList.map((opnSvcId) => {
-      const queryParams = {
-        ...baseQueryParams,
-        localCode: region.code,
-        opnSvcId: opnSvcId,
-      };
-
-      return fetchData(url, queryParams)
-        .then((data: APIResponse) => {
-          console.log(data);
-          if (data.result.header.process.code !== '00') {
-            throw new Error(`API request failed: ${data.result.header.process.message}`);
-          }
-          return { totalCount: data.result.header.paging.totalCount, data: data.result.body.rows.row };
-        })
-        .catch((e) => ({
-          e,
-        }));
-    }),
+  const requests = localCodeArray.flatMap((localCode) =>
+    opnSvcIdList.map((opnSvcId) => createRequest(url, baseQueryParams, localCode, opnSvcId)),
   );
-  let results = [];
-  results = await Promise.all(requests); // 뭔가 문제 생김;
-  //for (let i = 0; i < requests.length; i++) {
-  //  const result = await requests[i];
-  //  console.log(result);
-  //  console.log('done: ' + i);
-  //}
+
+  const res = await Promise.all(requests);
+  console.log(res);
+
+  //const results = await processWithQueue(requests, 10);
+
+  //console.log('\n=============================================================\nDone: ', results.length);
 };
 
 updateData();
