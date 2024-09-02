@@ -1,12 +1,12 @@
 import { Type } from 'class-transformer';
 import { IsEnum, IsLatitude, IsLongitude, IsNumber, IsOptional } from 'class-validator';
 
-enum OrderBy {
+export enum OrderBy {
   DISTANCE = 'distance',
   RATING = 'rating',
 }
 
-enum SortBy {
+export enum SortBy {
   DESC = 'DESC',
   ASC = 'ASC',
 }
