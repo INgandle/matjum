@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 import { Member } from '../entities/member.entity';
 import { SignInDto } from '../members/dto/sign-in.dto';
 
-import { JWT_REFRESH_EXPIRES_IN } from './auth.constants';
+import { JWT_ACCESS_EXPIRES_IN, JWT_REFRESH_EXPIRES_IN } from './auth.constants';
 
 @Injectable()
 export class AuthService {
@@ -60,5 +60,27 @@ export class AuthService {
     await this.cacheManager.set(`refresh_token:${member.id}`, refreshToken);
 
     return { accessToken, refreshToken };
+  }
+
+  /**
+   * 리프레쉬 토큰이 유효하면 새로운 액세스 토큰을 발급합니다.
+   * @returns accessToken
+   */
+  async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string }> {
+    try {
+      const payload = this.jwtService.verify(refreshToken);
+      const storedToken = await this.cacheManager.get(`refresh_token:${payload.sub}`);
+
+      if (!storedToken || storedToken !== refreshToken) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      const newPayload = { sub: payload.sub, accountName: payload.accountName, name: payload.name };
+      const accessToken = this.jwtService.sign(newPayload, { expiresIn: JWT_ACCESS_EXPIRES_IN });
+
+      return { accessToken };
+    } catch (err) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
   }
 }

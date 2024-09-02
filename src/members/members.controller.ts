@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, HttpStatus, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, HttpStatus, HttpCode, Headers } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from '../auth/auth.service';
@@ -40,6 +40,12 @@ export class MembersController {
   @HttpCode(HttpStatus.OK)
   async signIn(@Body() signInDto: SignInDto): Promise<{ accessToken: string; refreshToken: string }> {
     return this.authService.signIn(signInDto);
+  }
+  // TODO) RefreshTokenGuard
+  @Post('auth/refresh')
+  async refreshToken(@Headers('Authorization') auth: string): Promise<{ accessToken: string }> {
+    const refreshToken = auth.split(' ')[1]; // "Bearer <token>" 형식 가정
+    return await this.authService.refreshAccessToken(refreshToken);
   }
   /**
    * 사용자 정보 조회 API
