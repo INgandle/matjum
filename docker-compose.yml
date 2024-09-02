@@ -33,7 +33,7 @@ services:
     networks:
       - matjum-network
   redis:
-    image: 'redis:latest'
+    image: 'redis:7.4.0'
     container_name: redis-matjum
     restart: always
     ports:
