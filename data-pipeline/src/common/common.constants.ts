@@ -19,7 +19,7 @@ export const databaseOptions: DataSourceOptions = {
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
   entities: ['./src/entities/*.ts'],
-  synchronize: true,
+  synchronize: false, // 자꾸 인덱스 없애서 false로 설정
   logging: true,
   namingStrategy: new SnakeNamingStrategy(),
 };
@@ -38,7 +38,7 @@ export const excludeCategorySet = new Set([
 ]);
 
 // api 요청하는 지역코드
-export const regionCodes = {
+export const localCodes = {
   서울특별시: {
     종로구: '3010000',
     중구: '3020000',

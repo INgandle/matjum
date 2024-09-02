@@ -49,7 +49,7 @@ const dataFormatting = (data: RawData[]): ProcessedData[] => {
         category: item.uptaeNm === '' ? null : item.uptaeNm,
         phoneNumber: item.siteTel === '' ? null : item.siteTel,
         location:
-          item.x && item.y
+          item.x && item.x !== '' && item.y && item.y !== ''
             ? () => `ST_SetSRID(ST_Transform(ST_SetSRID(ST_MakePoint(${item.x}, ${item.y}), 5174), 4326), 4326)`
             : null,
         lastModTs: item.lastModTs,
@@ -127,4 +127,4 @@ const processingRawXML = async (): Promise<ProcessedData[]> => {
   return results;
 };
 
-export default processingRawXML;
+export { processingRawXML };

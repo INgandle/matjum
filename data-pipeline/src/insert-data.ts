@@ -31,7 +31,8 @@ const bulkInsert = async (AppDataSource: DataSource, data: ProcessedData[]) => {
   console.log('All data inserted: ', data.length);
 };
 
-export const upsertData = async (dataList: ProcessedData[]) => {
+// FIXME: insertData
+const insertData = async (dataList: ProcessedData[]) => {
   const dataSource = await createDataSource();
 
   try {
@@ -43,3 +44,5 @@ export const upsertData = async (dataList: ProcessedData[]) => {
   }
   await dataSource.destroy();
 };
+
+export { createDataSource, insertData };
