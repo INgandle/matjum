@@ -16,10 +16,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: JwtPayload): Promise<JwtUser> {
-    return {
+    const user = {
       id: payload.sub,
       accountName: payload.accountName,
       name: payload.name,
     };
+
+    return user; // 반환된 객체가 handleRequest로
   }
 }

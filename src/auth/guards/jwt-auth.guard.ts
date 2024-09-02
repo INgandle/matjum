@@ -4,7 +4,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 
 import { IsPublicKey } from '../decorators/public.decorator';
-import { JwtUser } from '../strategies/jwt.types';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -20,22 +19,21 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context); //jwt 유효성 검사
   }
 
-  // TUser 제네릭을 사용하여 기본값을 JwtUser로 설정
-  // JwtUser 타입을 기본으로 사용하면서도 필요에 따라 다른 타입 지원 가능
-  handleRequest<TUser extends JwtUser = JwtUser>(
-    err: Error | null,
-    user: TUser | false | null,
-    info: string | undefined,
-    context: ExecutionContext,
-  ): TUser {
+  handleRequest(err, user, info) {
     if (err || !user) {
+      // 토큰이 만료된 경우
+      if (info && info.name === 'TokenExpiredError') {
+        throw new UnauthorizedException('Token has expired. Please log in again.');
+      }
+
+      // 토큰이 유효하지 않은 경우
+      if (info && info.name === 'JsonWebTokenError') {
+        throw new UnauthorizedException('Invalid token. Please log in again.');
+      }
+
       throw new UnauthorizedException('Authentication failed');
     }
 
-    // 요청 객체에 사용자 정보 추가
-    const request = context.switchToHttp().getRequest();
-    request.user = user;
-
-    return user as TUser;
+    return user; //인증된 사용자 정보는 request.user로 설정됨
   }
 }
