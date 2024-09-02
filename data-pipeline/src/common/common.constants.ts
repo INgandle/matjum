@@ -4,13 +4,13 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 config();
 
-export const fetchOption = {
+export const FETCH_OPTION = {
   url: 'http://www.localdata.go.kr/platform/rest/GR0/openDataApi',
   query: {
     authKey: process.env.AUTH_KEY,
-    state: '01', // 영업중
+    //state: '01', // 영업중
     pageIndex: '1',
-    pageSize: '500', // 개발용 : 500, 운영용 : 10000 max
+    pageSize: '10000', // 개발용 : 500, 운영용 : 10000 max
     resultType: 'json',
   },
 };

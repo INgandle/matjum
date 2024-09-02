@@ -16,7 +16,7 @@ export type APIResponse = {
     body: {
       rows: {
         row: RawData[];
-      };
+      }[];
     };
   };
 };
