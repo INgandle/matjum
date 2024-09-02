@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 
 import { IsPublicKey } from '../decorators/public.decorator';
+import { AuthInfo, JwtUser } from '../strategies/jwt.types';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -19,16 +20,16 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context); //jwt 유효성 검사
   }
 
-  handleRequest(err, user, info) {
+  handleRequest<TUser extends JwtUser>(err: Error, user: TUser, info: AuthInfo): TUser {
     if (err || !user) {
       // 토큰이 만료된 경우
       if (info && info.name === 'TokenExpiredError') {
-        throw new UnauthorizedException('Token has expired. Please log in again.');
+        throw new UnauthorizedException('Token has expired. Please login again.');
       }
 
       // 토큰이 유효하지 않은 경우
       if (info && info.name === 'JsonWebTokenError') {
-        throw new UnauthorizedException('Invalid token. Please log in again.');
+        throw new UnauthorizedException('Invalid token. Please login again.');
       }
 
       throw new UnauthorizedException('Authentication failed');

@@ -9,3 +9,8 @@ export type JwtUser = {
   accountName: string;
   name: string;
 };
+
+export type AuthInfo = {
+  name?: string;
+  message?: string;
+};
