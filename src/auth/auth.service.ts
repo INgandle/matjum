@@ -1,5 +1,6 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
@@ -17,6 +18,7 @@ export class AuthService {
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
     private jwtService: JwtService,
+    private configService: ConfigService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -52,6 +54,7 @@ export class AuthService {
 
     // 리프레시 토큰 생성
     const refreshToken = this.jwtService.sign(payload, {
+      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       expiresIn: JWT_REFRESH_EXPIRES_IN,
     });
 
@@ -63,24 +66,38 @@ export class AuthService {
   }
 
   /**
-   * 리프레쉬 토큰이 유효하면 새로운 액세스 토큰을 발급합니다.
-   * @returns accessToken
+   * refreshToken 유효성 검증
+   * @param refreshToken
+   * @returns
    */
-  async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string }> {
-    try {
-      const payload = this.jwtService.verify(refreshToken);
-      const storedToken = await this.cacheManager.get(`refresh_token:${payload.sub}`);
-
-      if (!storedToken || storedToken !== refreshToken) {
-        throw new UnauthorizedException('Invalid refresh token');
-      }
-
-      const newPayload = { sub: payload.sub, accountName: payload.accountName, name: payload.name };
-      const accessToken = this.jwtService.sign(newPayload, { expiresIn: JWT_ACCESS_EXPIRES_IN });
-
-      return { accessToken };
-    } catch (err) {
-      throw new UnauthorizedException('Invalid refresh token');
+  async validateRefreshToken(userId: string, providedRefreshToken: string): Promise<boolean> {
+    const storedToken = await this.cacheManager.get(`refresh_token:${userId}`);
+    if (storedToken === null || storedToken === undefined) {
+      return false;
     }
+    if (storedToken !== providedRefreshToken) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * 유효성 검증 후 새로운 accessToken 발급
+   * @param user
+   * @returns
+   */
+  async refreshAccessToken(userId: string): Promise<{ newAccessToken: string }> {
+    const member = await this.memberRepository.findOne({
+      where: { id: userId },
+      select: ['id', 'accountName', 'name'],
+    });
+
+    if (!member) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const payload = { sub: member.id, accountName: member.accountName, name: member.name };
+    const newAccessToken = this.jwtService.sign(payload, { expiresIn: JWT_ACCESS_EXPIRES_IN });
+    return { newAccessToken };
   }
 }

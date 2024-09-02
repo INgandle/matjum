@@ -9,6 +9,7 @@ import { Member } from '../entities/member.entity';
 
 import { JWT_ACCESS_EXPIRES_IN } from './auth.constants';
 import { AuthService } from './auth.service';
+import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
@@ -26,7 +27,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     ConfigModule,
     RedisCacheModule,
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, JwtRefreshTokenStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

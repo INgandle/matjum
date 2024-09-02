@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, HttpStatus, HttpCode, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, HttpStatus, HttpCode, Request, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from '../auth/auth.service';
 import { Public } from '../auth/decorators/public.decorator';
+import { RefreshAuth } from '../auth/decorators/refresh-auth.decorator';
+import { JwtRefreshGuard } from '../auth/guards/jwt-refresh.guard';
 
 import { CreateMemberDto } from './dto/create-member.dto';
 import { MemberResponseDto } from './dto/member-response.dto';
@@ -42,10 +44,13 @@ export class MembersController {
     return this.authService.signIn(signInDto);
   }
   // TODO) RefreshTokenGuard
+
+  @RefreshAuth()
+  @UseGuards(JwtRefreshGuard)
   @Post('auth/refresh')
-  async refreshToken(@Headers('Authorization') auth: string): Promise<{ accessToken: string }> {
-    const refreshToken = auth.split(' ')[1]; // "Bearer <token>" 형식 가정
-    return await this.authService.refreshAccessToken(refreshToken);
+  async refreshToken(@Request() req): Promise<{ newAccessToken: string }> {
+    const { userId } = req.user;
+    return await this.authService.refreshAccessToken(userId);
   }
   /**
    * 사용자 정보 조회 API

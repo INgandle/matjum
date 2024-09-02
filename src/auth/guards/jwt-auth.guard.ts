@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 
 import { IsPublicKey } from '../decorators/public.decorator';
+import { refreshAuthKey } from '../decorators/refresh-auth.decorator';
 import { AuthInfo, JwtUser } from '../strategies/jwt.types';
 
 @Injectable()
@@ -14,7 +15,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IsPublicKey, [context.getHandler(), context.getClass()]);
-    if (isPublic === true) {
+    const isRefreshAuth = this.reflector.getAllAndOverride<boolean>(refreshAuthKey, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic === true || isRefreshAuth === true) {
       return true;
     }
     return super.canActivate(context); //jwt 유효성 검사
