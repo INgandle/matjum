@@ -9,4 +9,5 @@ export class RestaurantResponseDto extends OmitType(Restaurant, ['reviews', 'cre
   readonly lon: number;
   readonly lat: number;
   readonly reviews?: ReviewResponseDto[];
+  readonly distance?: number;
 }
