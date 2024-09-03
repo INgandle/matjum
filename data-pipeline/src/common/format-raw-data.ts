@@ -33,11 +33,6 @@ const formatAddress = (siteWhlAddr?: string, rdnWhlAddr?: string): string | null
 const dataFormatting = (data: RawData[]): { opened: ProcessedData[]; closed: ProcessedData[] } => {
   const [opened, closed] = data.reduce(
     (acc, item: RawData) => {
-      // 제외 카테고리에 포함되지 않는 항목만 처리
-      if (!item.uptaeNm) {
-        console.log(item);
-      }
-
       if (!EXCLUDE_CATEGORY_SET.has(item.uptaeNm)) {
         const processed = {
           name: item.bplcNm, // not null
