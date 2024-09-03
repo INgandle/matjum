@@ -27,12 +27,12 @@ describe('RestaurantsController', () => {
     service = module.get<RestaurantsService>(RestaurantsService);
   });
 
-  it('should be define', () => {
+  it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
   });
 
-  describe('리뷰 생성 API', () => {
+  describe('createReview', () => {
     const restaurantId = '550e8400-e29b-41d4-a716-446655440000';
     const memberId = '2bbbe5bb-5f3d-4bbb-97d8-d0ed2d7d630a';
     const reviewId = '625ad103-1fbe-404b-a865-cc09990b37ec';
