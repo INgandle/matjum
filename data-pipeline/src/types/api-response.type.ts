@@ -20,3 +20,11 @@ export type LocalAPIResponse = {
     };
   };
 };
+
+export type FetchResult = {
+  url: URL;
+  totalCount: number;
+  data: RawData[];
+};
+
+export type FetchResultFailed = {};

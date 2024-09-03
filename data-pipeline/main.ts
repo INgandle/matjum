@@ -6,5 +6,4 @@ const main = async () => {
   const dataList = await processingRawXML();
   await insertData(dataList);
 };
-//name category phone address location lating
 main();

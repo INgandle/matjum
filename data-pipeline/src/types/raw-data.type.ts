@@ -1,3 +1,7 @@
+/**
+ * api 에서 요청받은 response의 data
+ * result.body.rows[0].row
+ */
 export type RawData = {
   /** 번호 */
   rowNum: string;

@@ -24,15 +24,19 @@ const formatAddress = (siteWhlAddr?: string, rdnWhlAddr?: string): string | null
 
 /**
  * 데이터를 가공하여 반환
- * ''인 필드는 null 로 처리.
+ * '' 인 경우 null로 처리
  *
  * @param data
  * @returns
  */
-const dataFormatting = (data: RawData[]) => {
+const dataFormatting = (data: RawData[]): { opened: ProcessedData[]; closed: ProcessedData[] } => {
   const [opened, closed] = data.reduce(
     (acc, item: RawData) => {
       // 제외 카테고리에 포함되지 않는 항목만 처리
+      if (!item.uptaeNm) {
+        console.log(item);
+      }
+
       if (!excludeCategorySet.has(item.uptaeNm)) {
         const processed = {
           name: item.bplcNm, // not null

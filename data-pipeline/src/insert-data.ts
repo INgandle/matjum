@@ -1,12 +1,15 @@
-import { DataSource } from 'typeorm';
-
-import { databaseOptions } from './common/common.constants';
-import { ProcessedData } from './types/processed-data.type';
+import { CHUNK_SIZE } from './common/common.constants';
 import { DataSourceManager } from './data-source-manager';
+import { ProcessedData } from './types/processed-data.type';
 
-const bulkInsert = async (dataSourceManager: DataSourceManager, data: ProcessedData[]) => {
+/**
+ * 5000개씩 끊어서 데이터를 insert
+ *
+ * @param dataSourceManager
+ * @param data
+ */
+const chunkedInsert = async (dataSourceManager: DataSourceManager, data: ProcessedData[]) => {
   const repository = dataSourceManager.getRepository('Restaurant');
-  const CHUNK_SIZE = 5000;
 
   for (let i = 0; i < data.length; i += CHUNK_SIZE) {
     const chunk = data.slice(i, i + CHUNK_SIZE);
@@ -16,13 +19,17 @@ const bulkInsert = async (dataSourceManager: DataSourceManager, data: ProcessedD
   console.log('All data inserted: ', data.length);
 };
 
-// FIXME: insertData
+/**
+ * 초기 data를 insert하는 함수
+ *
+ * @param dataList
+ */
 const insertData = async (dataList: ProcessedData[]) => {
   const dataSourceManager = DataSourceManager.getInstance();
 
   await dataSourceManager.initialize();
 
-  await bulkInsert(dataSourceManager, dataList);
+  await chunkedInsert(dataSourceManager, dataList);
 
   await dataSourceManager.closeConnection();
 };

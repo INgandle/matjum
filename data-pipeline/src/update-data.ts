@@ -2,6 +2,7 @@
  * 지방행정 인허가 데이터를 가져오는 함수
  */
 
+import { CHUNK_SIZE } from './common/common.constants';
 import { DataSourceManager } from './data-source-manager';
 import { getUpdatedData } from './get-updated-data';
 
@@ -22,6 +23,10 @@ const removeDuplicates = (data) => {
   return Array.from(uniqueMap.values());
 };
 
+/**
+ * 변경된 데이터를 업데이트하는 함수.
+ * 영업 중인 데이터는 upsert, 폐업한 데이터는 delete 한다.
+ */
 const updateData = async () => {
   const dataSourceManager = DataSourceManager.getInstance();
   await dataSourceManager.initialize();
@@ -31,7 +36,6 @@ const updateData = async () => {
   const uniqueClosed = removeDuplicates(closed);
 
   const repository = dataSourceManager.getRepository('Restaurant');
-  const CHUNK_SIZE = 5000;
 
   try {
     for (let i = 0; i < uniqueOpened.length; i += CHUNK_SIZE) {

@@ -25,9 +25,9 @@ const readFile = async (parser: XMLParser, filePath: string): Promise<ProcessedD
     const parsedData = parser.parse(content).result.body.rows.row;
     const { opened } = dataFormatting(parsedData);
     return opened;
-  } catch (error) {
-    console.error(`Error reading file ${filePath}:`, error);
-    throw error;
+  } catch (err) {
+    console.error(`Error reading file ${filePath}:`, err);
+    throw err;
   }
 };
 
@@ -46,9 +46,9 @@ const readMultipleFiles = async (fileNames: string[]): Promise<ProcessedData[]> 
     const fileContents = await Promise.all(filePaths.map((filePath) => readFile(parser, filePath)));
     console.log('All files have been read successfully');
     return fileContents.flat();
-  } catch (error) {
-    console.error('Error reading one or more files:', error);
-    throw error;
+  } catch (err) {
+    console.error('Error reading one or more files:', err);
+    throw err;
   }
 };
 

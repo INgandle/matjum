@@ -2,7 +2,7 @@ import { localCodes } from './common/common.constants';
 import { DataSourceManager } from './data-source-manager';
 import { Restaurant } from './entities/restaurant.entity';
 import { dataFormatting } from './format-raw-data';
-import { LocalAPIResponse } from './types/api-response.type';
+import { FetchResult, LocalAPIResponse } from './types/api-response.type';
 import { QueryParam } from './types/query-param.type';
 
 /**
@@ -47,42 +47,46 @@ const getRecentUpdate = async (dataSourceManager: DataSourceManager) => {
 };
 
 /**
+ * 공공 api로 데이터를 요청한다.
  *
- * @param url
+ * @param url 요청한 url의 URL 객체
  * @param queryParams
  * @returns
  */
-const fetchData = async (url: string, queryParams: QueryParam): Promise<LocalAPIResponse> => {
-  const params = new URLSearchParams(queryParams);
-  const fullUrl = `${url}?${params}`;
-  console.log(fullUrl);
-
+const fetchData = async (url: URL): Promise<LocalAPIResponse> => {
   // 200 ok , code(00)
-  const response = await fetch(fullUrl);
+  const response = await fetch(url.toString());
   return response.json();
 };
 
-const createRequest = async (url: string, queryParam: QueryParam) => {
-  const data: LocalAPIResponse = await fetchData(url, queryParam);
-  if (data.result.header.process.code !== '00') {
-    throw new Error(`API request failed: ${data.result.header.process.message}`);
-  }
-  console.log(
-    queryParam.localCode === '6110000' ? '서울 :' : '경기 :',
-    queryParam.opnSvcId === '07_24_04_P' ? '일반음식점' : '휴게음식점',
-    data.result.header.paging.totalCount,
-  );
-  return {
-    url: url,
-    totalCount: data.result.header.paging.totalCount,
-    data: data.result.body.rows[0].row,
-  };
-};
-
-type FetchResult = {
-  url: string;
-  totalCount: number;
-  data: any[];
+const createRequest = async (baseUrl: URL, queryParam?: QueryParam) => {
+  return new Promise<FetchResult>(async (resolve, reject) => {
+    const url = new URL(baseUrl.toString());
+    try {
+      if (queryParam !== undefined) {
+        if (queryParam !== undefined) {
+          Object.entries(queryParam).forEach(([key, value]) => {
+            url.searchParams.set(key, value);
+          });
+        }
+      }
+      const data: LocalAPIResponse = await fetchData(url);
+      if (data.result.header.process.code !== '00') {
+        throw new Error(`API request failed: ${data.result.header.process.message}`);
+      }
+      const localCode = queryParam?.localCode ?? url.searchParams.get('localCode');
+      const opnSvcId = queryParam?.opnSvcId ?? url.searchParams.get('opnSvcId');
+      console.log(
+        localCode,
+        localCode === '6110000' ? '서울 :' : '경기 :',
+        opnSvcId == '07_24_04_P' ? '일반음식점' : '휴게음식점',
+        data.result.header.paging.totalCount,
+      );
+      resolve({ url: url, totalCount: data.result.header.paging.totalCount, data: data.result.body.rows[0].row });
+    } catch (err) {
+      reject({ url: url, err: err });
+    }
+  });
 };
 
 /**
@@ -96,13 +100,12 @@ const getUpdatedData = async (dataSourceManager: DataSourceManager) => {
 
   // 일반음식점, 휴게음식점
   const opnSvcIdList = ['07_24_04_P', '07_24_05_P'];
-  // 한국 오늘 날짜
 
   const today = convertDateToKST(new Date());
-  // 시간을 정할 수 없으므로 최근 업데이트 된 날짜 당일로 설정
+  // 날짜만 지정할 수 있으므로 (시간은 불가능) 최근 업데이트 된 날짜 당일로 설정
   const lastUpdate = convertDateToKST(lastModTs);
 
-  const url = 'http://www.localdata.go.kr/platform/rest/GR0/openDataApi';
+  const url = new URL('http://www.localdata.go.kr/platform/rest/GR0/openDataApi');
   const localCodeArray = Object.values(localCodes);
 
   const baseQueryParam = {
@@ -110,7 +113,7 @@ const getUpdatedData = async (dataSourceManager: DataSourceManager) => {
     lastModTsBgn: lastUpdate, // 전 월의 24일까지 가능.
     lastModTsEnd: today,
     pageIndex: '1',
-    pageSize: '500', // 개발용 : 500, 운영용 : 10000 ma
+    pageSize: '500', // max -  개발용 : 500, 운영용 : 10000
     resultType: 'json',
   };
 
@@ -127,14 +130,46 @@ const getUpdatedData = async (dataSourceManager: DataSourceManager) => {
    */
   const results = await Promise.allSettled(requests);
 
-  // TODO: rejected 처리 추가
-  const successfulResults = results
-    .filter((result): result is PromiseFulfilledResult<FetchResult> => result.status === 'fulfilled')
-    .map((result) => result.value);
+  const successfulResults: FetchResult[] = [];
+  const additionalRequests: Promise<FetchResult>[] = [];
 
-  const { opened, closed } = dataFormatting(successfulResults.flatMap((result) => result.data));
-  console.log('opened:', opened.length, 'closed:', closed.length);
-  return { opened, closed };
+  results.forEach((result) => {
+    if (result.status === 'fulfilled') {
+      const { value } = result;
+      if (value.totalCount > 500) {
+        const pageIndex = +value.url.searchParams.get('pageIndex');
+        if (pageIndex === 1) {
+          // 500개 이상일 때 추가 요청
+          // 1024개 -> 2, 3
+          for (let i = 2; i * 500 <= value.totalCount; i++) {
+            const queryParam = new URLSearchParams(value.url.searchParams);
+            queryParam.set('pageIndex', i.toString());
+            const url = new URL(value.url.toString());
+            console.log('\n\nindex: ', i, ', url: ', url, '\n\n');
+            url.search = queryParam.toString();
+            additionalRequests.push(createRequest(url));
+          }
+        }
+      }
+      successfulResults.push(value);
+    } else {
+      const { url, err } = result.reason;
+      console.error(url, err);
+    }
+  });
+
+  const additionalResults = await Promise.allSettled(additionalRequests);
+  additionalResults.forEach((result) => {
+    if (result.status === 'fulfilled') {
+      console.log(result.value.url);
+      successfulResults.push(result.value);
+    } else {
+      const { url, err } = result.reason;
+      console.error(url, err);
+    }
+  });
+
+  return dataFormatting(successfulResults.flatMap((result) => result.data));
 };
 
 export { getUpdatedData };

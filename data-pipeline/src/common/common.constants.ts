@@ -28,6 +28,8 @@ export const databaseOptions: DataSourceOptions = {
   namingStrategy: new SnakeNamingStrategy(),
 };
 
+export const CHUNK_SIZE = 5000;
+
 /**
  * 필요없는 카테고리 리스트
  */
