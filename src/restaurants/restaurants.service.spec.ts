@@ -6,6 +6,8 @@ import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Restaurant } from '../entities/restaurant.entity';
 
 import { RestaurantsService } from './restaurants.service';
+import { OrderBy, RestaurantQueryDto } from './dto/restaurant-query.dto';
+import { RestaurantResponseDto } from './dto/restaurant-response.dto';
 
 describe('RestaurantsService', () => {
   let service: RestaurantsService;
@@ -27,7 +29,7 @@ describe('RestaurantsService', () => {
   });
 
   describe('findOneDetail', () => {
-    it('should throw NotFoundException if restaurant is not found', async () => {
+    it('Restaurant가 있으면 상세 정보를 반환합니다.', async () => {
       const id = '7e3b5f25-4c58-4d88-9dc9-1d2e638ef3f9';
 
       // TypeScript에서 정확한 타입을 지정
@@ -48,7 +50,7 @@ describe('RestaurantsService', () => {
       expect(queryBuilderMock.getRawOne).toHaveBeenCalled();
     });
 
-    it('should return restaurant detail if restaurant is found', async () => {
+    it('Restaurant가 존재하면 상세 정보를 반환합니다.', async () => {
       const id = '7e3b5f25-4c58-4d88-9dc9-1d2e638ef3f9';
       const mockResult = {
         id: '1',
