@@ -27,4 +27,7 @@ export type FetchResult = {
   data: RawData[];
 };
 
-export type FetchResultFailed = {};
+export type FetchResultFailed = {
+  url: URL;
+  err: Error;
+};

@@ -2,13 +2,14 @@
   "name": "data-pipeline",
   "version": "1.0.0",
   "description": "Restaurant ETL data pipeline",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist/get-data.js"
-  },
+  "main": "update-data.ts",
   "author": "Jisu Kim",
   "license": "ISC",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "ts-node src/main.ts"
+  },
   "dependencies": {
     "dotenv": "^16.4.5",
     "fast-xml-parser": "^4.4.1",

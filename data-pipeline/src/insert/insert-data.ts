@@ -1,6 +1,6 @@
-import { CHUNK_SIZE } from './common/common.constants';
-import { DataSourceManager } from './data-source-manager';
-import { ProcessedData } from './types/processed-data.type';
+import { CHUNK_SIZE } from '../common/common.constants';
+import { DataSourceManager } from '../common/data-source-manager';
+import { ProcessedData } from '../types/processed-data.type';
 
 /**
  * 5000개씩 끊어서 데이터를 insert

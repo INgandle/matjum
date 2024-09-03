@@ -1,9 +1,9 @@
-import { localCodes } from './common/common.constants';
-import { DataSourceManager } from './data-source-manager';
-import { Restaurant } from './entities/restaurant.entity';
-import { dataFormatting } from './format-raw-data';
-import { FetchResult, LocalAPIResponse } from './types/api-response.type';
-import { QueryParam } from './types/query-param.type';
+import { localCodes } from '../common/common.constants';
+import { DataSourceManager } from '../common/data-source-manager';
+import { Restaurant } from '../entities/restaurant.entity';
+import { dataFormatting } from '../common/format-raw-data';
+import { FetchResult, LocalAPIResponse } from '../types/api-response.type';
+import { QueryParam } from '../types/query-param.type';
 
 /**
  * 한국 표준시로 변환, YYYYMMDD 형식으로 반환

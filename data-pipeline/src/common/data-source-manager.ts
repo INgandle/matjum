@@ -1,6 +1,6 @@
 import { DataSource, EntityTarget, Repository } from 'typeorm';
 
-import { databaseOptions } from './common/common.constants';
+import { databaseOptions } from './common.constants';
 
 /**
  * Data source 관리 클래스

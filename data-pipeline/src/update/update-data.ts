@@ -2,9 +2,10 @@
  * 지방행정 인허가 데이터를 가져오는 함수
  */
 
-import { CHUNK_SIZE } from './common/common.constants';
-import { DataSourceManager } from './data-source-manager';
+import { CHUNK_SIZE } from '../common/common.constants';
+import { DataSourceManager } from '../common/data-source-manager';
 import { getUpdatedData } from './get-updated-data';
+import { ProcessedData } from '../types/processed-data.type';
 
 /**
  * name, address가 같은 데이터를 제거하는 함수
@@ -12,7 +13,7 @@ import { getUpdatedData } from './get-updated-data';
  * @param data
  * @returns
  */
-const removeDuplicates = (data) => {
+const removeDuplicates = (data: ProcessedData[]): ProcessedData[] => {
   const uniqueMap = new Map();
   for (const item of data) {
     const key = `${item.name}|${item.address}`;

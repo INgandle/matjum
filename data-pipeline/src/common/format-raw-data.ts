@@ -1,6 +1,6 @@
-import { excludeCategorySet } from './common/common.constants';
-import { ProcessedData } from './types/processed-data.type';
-import { RawData } from './types/raw-data.type';
+import { excludeCategorySet } from './common.constants';
+import { ProcessedData } from '../types/processed-data.type';
+import { RawData } from '../types/raw-data.type';
 
 /**
  * 도로명, 지번 주소를 합쳐서 반환
