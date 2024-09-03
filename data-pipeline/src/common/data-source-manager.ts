@@ -1,4 +1,4 @@
-import { DataSource, EntityTarget, Repository } from 'typeorm';
+import { DataSource, EntityTarget, Repository, SelectQueryBuilder } from 'typeorm';
 
 import { DATABASE_OPTION } from './common.constants';
 
@@ -42,7 +42,7 @@ export class DataSourceManager {
     return this.dataSource.getRepository(entity);
   }
 
-  public getQueryBuilder() {
+  public getQueryBuilder<T>(): SelectQueryBuilder<T> {
     return this.dataSource.createQueryBuilder();
   }
 

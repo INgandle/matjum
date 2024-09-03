@@ -7,8 +7,9 @@ import * as fs from 'fs/promises';
 import { join } from 'path';
 
 import { XMLParser } from 'fast-xml-parser';
-import { ProcessedData } from '../types/processed-data.type';
+
 import { dataFormatting } from '../common/format-raw-data';
+import { ProcessedData } from '../types/processed-data.type';
 
 /**
  * 파일을 읽어서 데이터를 가공한 후 반환

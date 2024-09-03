@@ -1,7 +1,8 @@
 import { CHUNK_SIZE } from '../common/common.constants';
 import { DataSourceManager } from '../common/data-source-manager';
-import { getUpdatedData } from './get-updated-data';
 import { ProcessedData } from '../types/processed-data.type';
+
+import { getUpdatedData } from './get-updated-data';
 
 /**
  * name, address가 같은 데이터를 제거하는 함수
@@ -24,7 +25,7 @@ const removeDuplicates = (data: ProcessedData[]): ProcessedData[] => {
  * 변경된 데이터를 업데이트하는 함수.
  * 영업 중인 데이터는 upsert, 폐업한 데이터는 delete 한다.
  */
-const updateData = async () => {
+const updateData = async (): Promise<void> => {
   const dataSourceManager = DataSourceManager.getInstance();
   await dataSourceManager.initialize();
 

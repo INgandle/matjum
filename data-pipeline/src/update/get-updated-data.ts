@@ -2,6 +2,7 @@ import { API_URL, KST_OFFSET, LOCAL_CODES } from '../common/common.constants';
 import { DataSourceManager } from '../common/data-source-manager';
 import { dataFormatting } from '../common/format-raw-data';
 import { FetchResult, LocalAPIResponse } from '../types/fetch-response.type';
+import { ProcessedData } from '../types/processed-data.type';
 import { QueryParam } from '../types/query-param.type';
 
 /**
@@ -10,7 +11,7 @@ import { QueryParam } from '../types/query-param.type';
  * @param date
  * @returns
  */
-const convertDateToKST = (date: Date) => {
+const convertDateToKST = (date: Date): string => {
   const kstDate = new Date(date.getTime() + KST_OFFSET); // utc기준
   return kstDate.toISOString().slice(0, 10).replace(/-/g, '');
 };
@@ -57,7 +58,7 @@ const fetchData = async (url: URL): Promise<LocalAPIResponse> => {
  * @param url
  * @param result
  */
-const logRequestInfo = (url: URL, result: LocalAPIResponse['result']) => {
+const logRequestInfo = (url: URL, result: LocalAPIResponse['result']): void => {
   const localCode = url.searchParams.get('localCode');
   const opnSvcId = url.searchParams.get('opnSvcId');
   const pageIndex = +url.searchParams.get('pageIndex');
@@ -98,7 +99,6 @@ const createRequest = async (baseUrl: URL, queryParam?: QueryParam): Promise<Fet
 const createAdditionalRequests = (value: FetchResult): Promise<FetchResult>[] => {
   const additionalRequests: Promise<FetchResult>[] = [];
 
-  const pageIndex = +value.url.searchParams.get('pageIndex');
   const totalPages = Math.ceil(value.totalCount / 500);
   for (let i = 2; i <= totalPages; i++) {
     const queryParam = new URLSearchParams(value.url.searchParams);
@@ -117,7 +117,10 @@ const createAdditionalRequests = (value: FetchResult): Promise<FetchResult>[] =>
  * @param dataSourceManager
  * @returns
  */
-const getUpdatedData = async (dataSourceManager: DataSourceManager) => {
+
+const getUpdatedData = async (
+  dataSourceManager: DataSourceManager,
+): Promise<{ opened: ProcessedData[]; closed: ProcessedData[] }> => {
   const lastModTs = await getRecentUpdate(dataSourceManager);
 
   // 일반음식점, 휴게음식점
@@ -138,7 +141,7 @@ const getUpdatedData = async (dataSourceManager: DataSourceManager) => {
     resultType: 'json',
   };
 
-  const initialRequests = Object.values(LOCAL_CODES).flatMap((localCode: string) =>
+  const initialRequests = Object.values(LOCAL_CODES).flatMap((localCode: string): Promise<FetchResult>[] =>
     opnSvcIdList.map((opnSvcId) => createRequest(url, { ...baseQueryParam, localCode, opnSvcId })),
   );
 

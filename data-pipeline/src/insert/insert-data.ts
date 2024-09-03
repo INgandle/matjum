@@ -8,7 +8,7 @@ import { ProcessedData } from '../types/processed-data.type';
  * @param dataSourceManager
  * @param data
  */
-const chunkedInsert = async (dataSourceManager: DataSourceManager, data: ProcessedData[]) => {
+const chunkedInsert = async (dataSourceManager: DataSourceManager, data: ProcessedData[]): Promise<void> => {
   const repository = dataSourceManager.getRepository('Restaurant');
 
   for (let i = 0; i < data.length; i += CHUNK_SIZE) {
@@ -24,7 +24,7 @@ const chunkedInsert = async (dataSourceManager: DataSourceManager, data: Process
  *
  * @param dataList
  */
-const insertData = async (dataList: ProcessedData[]) => {
+const insertData = async (dataList: ProcessedData[]): Promise<void> => {
   const dataSourceManager = DataSourceManager.getInstance();
 
   await dataSourceManager.initialize();
