@@ -46,7 +46,7 @@ const dataFormatting = (data: RawData[]): { opened: ProcessedData[]; closed: Pro
           phoneNumber: item.siteTel === '' ? null : item.siteTel,
           location:
             item.x && item.x !== '' && item.y && item.y !== ''
-              ? () => `ST_SetSRID(ST_Transform(ST_SetSRID(ST_MakePoint(${item.x}, ${item.y}), 5174), 4326), 4326)`
+              ? () => `ST_Transform(ST_SetSRID(ST_MakePoint(${item.x}, ${item.y}), 5174), 4326)`
               : null,
           lastModTs: item.lastModTs,
         };
