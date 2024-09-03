@@ -2,7 +2,8 @@ import { localCodes } from './common/common.constants';
 import { DataSourceManager } from './data-source-manager';
 import { Restaurant } from './entities/restaurant.entity';
 import { dataFormatting } from './format-raw-data';
-import { APIResponse } from './types/api-response.type';
+import { LocalAPIResponse } from './types/api-response.type';
+import { QueryParam } from './types/query-param.type';
 
 /**
  * 한국 표준시로 변환, YYYYMMDD 형식으로 반환
@@ -51,7 +52,7 @@ const getRecentUpdate = async (dataSourceManager: DataSourceManager) => {
  * @param queryParams
  * @returns
  */
-const fetchData = async (url: string, queryParams): Promise<APIResponse> => {
+const fetchData = async (url: string, queryParams: QueryParam): Promise<LocalAPIResponse> => {
   const params = new URLSearchParams(queryParams);
   const fullUrl = `${url}?${params}`;
   console.log(fullUrl);
@@ -61,15 +62,14 @@ const fetchData = async (url: string, queryParams): Promise<APIResponse> => {
   return response.json();
 };
 
-const createRequest = async (url: string, baseQueryParams, localCode: number, opnSvcId: string) => {
-  const queryParams = { ...baseQueryParams, localCode, opnSvcId };
-  const data: APIResponse = await fetchData(url, queryParams);
+const createRequest = async (url: string, queryParam: QueryParam) => {
+  const data: LocalAPIResponse = await fetchData(url, queryParam);
   if (data.result.header.process.code !== '00') {
     throw new Error(`API request failed: ${data.result.header.process.message}`);
   }
   console.log(
-    queryParams.localCode === 6110000 ? '서울 :' : '경기 :',
-    queryParams.opnSvcId === '07_24_04_P' ? '일반음식점' : '휴게음식점',
+    queryParam.localCode === '6110000' ? '서울 :' : '경기 :',
+    queryParam.opnSvcId === '07_24_04_P' ? '일반음식점' : '휴게음식점',
     data.result.header.paging.totalCount,
   );
   return {
@@ -79,55 +79,6 @@ const createRequest = async (url: string, baseQueryParams, localCode: number, op
   };
 };
 
-/*
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const createRequestWithRetry = async (
-  url: string,
-  baseQueryParams: any,
-  localCode: number,
-  opnSvcId: string,
-  maxRetries: number = 3,
-  retryDelay: number = 3000,
-) => {
-  const queryParams = { ...baseQueryParams, localCode, opnSvcId };
-
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      const data: APIResponse = await fetchData(url, queryParams);
-
-      if (data.result.header.process.code !== '00') {
-        throw new Error(`API request failed: ${data.result.header.process.message}`);
-      }
-
-      console.log(
-        queryParams.localCode === 6110000 ? '서울 :' : '경기 :',
-        queryParams.opnSvcId === '07_24_04_P' ? '일반음식점' : '휴게음식점',
-        data.result.header.paging.totalCount,
-      );
-
-      return {
-        url: url,
-        totalCount: data.result.header.paging.totalCount,
-        data: data.result.body.rows[0].row,
-      };
-    } catch (error) {
-      console.error(`Attempt ${attempt} failed:`, error);
-
-      if (attempt === maxRetries) {
-        console.error('Max retries reached. Throwing error.');
-        throw error;
-      }
-
-      console.log(`Retrying in ${retryDelay}ms...`);
-      await delay(retryDelay);
-      // 선택적: 재시도 간격을 점진적으로 증가시킬 수 있습니다.
-      // retryDelay *= 2;
-    }
-  }
-};
-*/
-
 type FetchResult = {
   url: string;
   totalCount: number;
@@ -135,7 +86,10 @@ type FetchResult = {
 };
 
 /**
- * API에서 받아온 데이터를 db에 업데이트
+ * update된 데이터를 공공 api 요청으로 가져온다.
+ *
+ * @param dataSourceManager
+ * @returns
  */
 const getUpdatedData = async (dataSourceManager: DataSourceManager) => {
   const lastModTs = await getRecentUpdate(dataSourceManager);
@@ -151,7 +105,7 @@ const getUpdatedData = async (dataSourceManager: DataSourceManager) => {
   const url = 'http://www.localdata.go.kr/platform/rest/GR0/openDataApi';
   const localCodeArray = Object.values(localCodes);
 
-  const baseQueryParams = {
+  const baseQueryParam = {
     authKey: process.env.API_KEY,
     lastModTsBgn: lastUpdate, // 전 월의 24일까지 가능.
     lastModTsEnd: today,
@@ -160,8 +114,11 @@ const getUpdatedData = async (dataSourceManager: DataSourceManager) => {
     resultType: 'json',
   };
 
-  const requests = localCodeArray.flatMap((localCode) =>
-    opnSvcIdList.map((opnSvcId) => createRequest(url, baseQueryParams, localCode, opnSvcId)),
+  const requests = localCodeArray.flatMap((localCode: string) =>
+    opnSvcIdList.map((opnSvcId) => {
+      const queryParam: QueryParam = { ...baseQueryParam, localCode, opnSvcId };
+      return createRequest(url, queryParam);
+    }),
   );
 
   /**

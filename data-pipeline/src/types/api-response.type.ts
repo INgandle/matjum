@@ -1,6 +1,6 @@
 import { RawData } from './raw-data.type';
 
-export type APIResponse = {
+export type LocalAPIResponse = {
   result: {
     header: {
       paging: {

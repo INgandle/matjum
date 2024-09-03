@@ -24,7 +24,7 @@ export const databaseOptions: DataSourceOptions = {
   database: process.env.POSTGRES_DB,
   entities: ['./src/entities/*.ts'],
   synchronize: false, // 자꾸 인덱스 없애서 false로 설정
-  logging: true,
+  logging: ['error', 'warn'],
   namingStrategy: new SnakeNamingStrategy(),
 };
 
@@ -43,6 +43,6 @@ export const excludeCategorySet = new Set([
 
 // api 요청하는 지역코드
 export const localCodes = {
-  서울특별시: 6110000,
-  경기도: 6410000,
+  서울특별시: '6110000',
+  경기도: '6410000',
 };
