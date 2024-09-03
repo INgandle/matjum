@@ -1,7 +1,3 @@
-/**
- * 지방행정 인허가 데이터를 가져오는 함수
- */
-
 import { CHUNK_SIZE } from '../common/common.constants';
 import { DataSourceManager } from '../common/data-source-manager';
 import { getUpdatedData } from './get-updated-data';

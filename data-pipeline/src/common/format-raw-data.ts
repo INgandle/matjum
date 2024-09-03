@@ -1,4 +1,4 @@
-import { excludeCategorySet } from './common.constants';
+import { EXCLUDE_CATEGORY_SET } from './common.constants';
 import { ProcessedData } from '../types/processed-data.type';
 import { RawData } from '../types/raw-data.type';
 
@@ -37,7 +37,7 @@ const dataFormatting = (data: RawData[]): { opened: ProcessedData[]; closed: Pro
         console.log(item);
       }
 
-      if (!excludeCategorySet.has(item.uptaeNm)) {
+      if (!EXCLUDE_CATEGORY_SET.has(item.uptaeNm)) {
         const processed = {
           name: item.bplcNm, // not null
           address: formatAddress(item.siteWhlAddr, item.rdnWhlAddr),

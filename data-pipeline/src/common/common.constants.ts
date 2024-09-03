@@ -4,18 +4,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 config();
 
-export const FETCH_OPTION = {
-  url: 'http://www.localdata.go.kr/platform/rest/GR0/openDataApi',
-  query: {
-    authKey: process.env.AUTH_KEY,
-    //state: '01', // 영업중
-    pageIndex: '1',
-    pageSize: '10000', // 개발용 : 500, 운영용 : 10000 max
-    resultType: 'json',
-  },
-};
-
-export const databaseOptions: DataSourceOptions = {
+export const DATABASE_OPTION: DataSourceOptions = {
   type: 'postgres',
   host: process.env.POSTGRES_HOST,
   port: parseInt(process.env.POSTGRES_PORT, 10),
@@ -33,7 +22,7 @@ export const CHUNK_SIZE = 5000;
 /**
  * 필요없는 카테고리 리스트
  */
-export const excludeCategorySet = new Set([
+export const EXCLUDE_CATEGORY_SET = new Set([
   '이동조리',
   '출장조리',
   '키즈카페',
@@ -44,7 +33,13 @@ export const excludeCategorySet = new Set([
 ]);
 
 // api 요청하는 지역코드
-export const localCodes = {
+export const LOCAL_CODES = {
   서울특별시: '6110000',
   경기도: '6410000',
 };
+
+export const OPN_SVC_ID_LIST = ['07_24_04_P', '07_24_05_P'];
+
+export const API_URL = 'http://www.localdata.go.kr/platform/rest/GR0/openDataApi';
+
+export const KST_OFFSET = 9 * 60 * 60 * 1000;

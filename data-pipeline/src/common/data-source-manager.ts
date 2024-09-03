@@ -1,6 +1,6 @@
 import { DataSource, EntityTarget, Repository } from 'typeorm';
 
-import { databaseOptions } from './common.constants';
+import { DATABASE_OPTION } from './common.constants';
 
 /**
  * Data source 관리 클래스
@@ -11,7 +11,7 @@ export class DataSourceManager {
   private dataSource: DataSource;
 
   private constructor() {
-    this.dataSource = new DataSource(databaseOptions);
+    this.dataSource = new DataSource(DATABASE_OPTION);
   }
 
   public static getInstance(): DataSourceManager {
