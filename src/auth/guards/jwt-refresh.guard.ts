@@ -1,10 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { JwtUser } from '../strategies/jwt.types';
+
+import { AuthInfo, JwtUser } from '../strategies/jwt.types';
 
 @Injectable()
 export class JwtRefreshGuard extends AuthGuard('jwt-refresh') {
-  handleRequest<TUser extends JwtUser>(err: Error, user: TUser, info: any): TUser {
+  handleRequest<TUser extends JwtUser>(err: Error, user: TUser, info: AuthInfo): TUser {
     if (err || !user) {
       // 리프레시 토큰이 만료된 경우
       if (info && info.name === 'TokenExpiredError') {

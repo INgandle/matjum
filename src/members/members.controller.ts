@@ -1,10 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, HttpStatus, HttpCode, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, HttpStatus, HttpCode, Request } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from '../auth/auth.service';
 import { Public } from '../auth/decorators/public.decorator';
 import { RefreshAuth } from '../auth/decorators/refresh-auth.decorator';
-import { JwtRefreshGuard } from '../auth/guards/jwt-refresh.guard';
 
 import { CreateMemberDto } from './dto/create-member.dto';
 import { MemberResponseDto } from './dto/member-response.dto';
@@ -19,12 +18,12 @@ export class MembersController {
     private readonly membersService: MembersService,
     private readonly authService: AuthService,
   ) {}
+
   /**
    * 회원가입 API
    * @param createMemberDto
    * @returns
    */
-
   @Public()
   @Post('sign-up')
   @HttpCode(HttpStatus.NO_CONTENT) // 성공 204
@@ -43,10 +42,13 @@ export class MembersController {
   async signIn(@Body() signInDto: SignInDto): Promise<{ accessToken: string; refreshToken: string }> {
     return this.authService.signIn(signInDto);
   }
-  // TODO) RefreshTokenGuard
 
+  /**
+   * 새로운 액세스 토큰 발급 API
+   * @param req
+   * @returns
+   */
   @RefreshAuth()
-  @UseGuards(JwtRefreshGuard)
   @Post('auth/refresh')
   async refreshToken(@Request() req): Promise<{ newAccessToken: string }> {
     const { userId } = req.user;
