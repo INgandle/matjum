@@ -2,7 +2,7 @@
   "name": "data-pipeline",
   "version": "1.0.0",
   "description": "Restaurant ETL data pipeline",
-  "main": "update-data.ts",
+  "main": "dist/main.js",
   "author": "Jisu Kim",
   "license": "ISC",
   "scripts": {

@@ -11,7 +11,7 @@ export const DATABASE_OPTION: DataSourceOptions = {
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  entities: ['./src/entities/*.ts'],
+  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   synchronize: false, // 자꾸 인덱스 없애서 false로 설정
   logging: ['error', 'warn'],
   namingStrategy: new SnakeNamingStrategy(),

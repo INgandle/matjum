@@ -1,6 +1,5 @@
 import { API_URL, KST_OFFSET, LOCAL_CODES } from '../common/common.constants';
 import { DataSourceManager } from '../common/data-source-manager';
-import { Restaurant } from '../entities/restaurant.entity';
 import { dataFormatting } from '../common/format-raw-data';
 import { FetchResult, LocalAPIResponse } from '../types/fetch-response.type';
 import { QueryParam } from '../types/query-param.type';
@@ -30,7 +29,7 @@ const getRecentUpdate = async (dataSourceManager: DataSourceManager): Promise<Da
   const result = await dataSourceManager
     .getQueryBuilder()
     .select('MAX(restaurant.lastModTs)', 'lastModTs')
-    .from(Restaurant, 'restaurant')
+    .from('Restaurant', 'restaurant')
     .getRawOne();
   console.timeEnd('getRecentUpdate');
 

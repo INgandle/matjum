@@ -1,6 +1,6 @@
 import { updateData } from './update/update-data';
 
 const main = async () => {
-  updateData();
+  await updateData();
 };
 main();

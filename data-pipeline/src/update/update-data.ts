@@ -61,6 +61,4 @@ const updateData = async () => {
   dataSourceManager.closeConnection();
 };
 
-updateData();
-
 export { updateData };
