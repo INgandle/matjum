@@ -33,7 +33,7 @@ describe('RestaurantsController', () => {
   });
 
   describe('findList', () => {
-    it('should return an array of restaurants', async () => {
+    it('Restaurant 배열이 반환됩니다.', async () => {
       const queryDto: RestaurantQueryDto = {
         lon: 127.0,
         lat: 37.5,
@@ -75,7 +75,7 @@ describe('RestaurantsController', () => {
   });
 
   describe('findOneDetail', () => {
-    it('should return a restaurant detail', async () => {
+    it('Restaurant의 상세 정보가 반환됩니다.', async () => {
       const id = '1';
       const mockResponse: RestaurantResponseDto = {
         id: '1',
@@ -97,7 +97,7 @@ describe('RestaurantsController', () => {
       expect(mockRestaurantsService.findOneDetail).toHaveBeenCalledWith(id);
     });
 
-    it('should throw NotFoundException if restaurant is not found', async () => {
+    it('Restaurant가 없으면 Not Found로 처리됩니다.', async () => {
       const id = '1';
       mockRestaurantsService.findOneDetail.mockImplementation(() => {
         throw new NotFoundException('Restaurant not found');
