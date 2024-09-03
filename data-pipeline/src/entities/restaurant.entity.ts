@@ -1,10 +1,20 @@
-import { Column, CreateDateColumn, Entity, Point, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  Point,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn,
+} from 'typeorm';
 
 /**
  * data-pipeline에서 사용하는 restaurant 엔티티
  */
 @Entity()
 @Unique(['name', 'address']) // { name, address }가 같은 맛집은 중복으로 등록되지 않도록 설정
+@Index('idx_restaurant_last_mod_ts', ['lastModTs'])
 export class Restaurant {
   // insert 이전에 uuid를 생성하여 넣어준다.
   @PrimaryGeneratedColumn('uuid')

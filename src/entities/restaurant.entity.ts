@@ -1,10 +1,11 @@
-import { Column, Entity, OneToMany, Point, Unique } from 'typeorm';
+import { Column, Entity, Index, OneToMany, Point, Unique } from 'typeorm';
 
 import { BaseModel } from './base-model.entity';
 import { Review } from './review.entity';
 
 @Entity()
 @Unique(['name', 'address']) // { name, address }가 같은 맛집은 중복으로 등록되지 않도록 설정
+@Index('idx_restaurant_last_mod_ts', ['lastModTs'])
 export class Restaurant extends BaseModel {
   @Column({ type: 'varchar', length: 255 })
   name: string;
