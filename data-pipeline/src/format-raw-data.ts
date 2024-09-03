@@ -34,32 +34,31 @@ const dataFormatting = (data: RawData[]) => {
     (acc, item: RawData) => {
       // 제외 카테고리에 포함되지 않는 항목만 처리
       if (!excludeCategorySet.has(item.uptaeNm)) {
+        const processed = {
+          name: item.bplcNm, // not null
+          address: formatAddress(item.siteWhlAddr, item.rdnWhlAddr),
+          category: item.uptaeNm === '' ? null : item.uptaeNm,
+          phoneNumber: item.siteTel === '' ? null : item.siteTel,
+          location:
+            item.x && item.x !== '' && item.y && item.y !== ''
+              ? () => `ST_SetSRID(ST_Transform(ST_SetSRID(ST_MakePoint(${item.x}, ${item.y}), 5174), 4326), 4326)`
+              : null,
+          lastModTs: item.lastModTs,
+        };
+
+        // 영업중인 배열을 [0], 폐업한 배열을 [1]에 추가
         if (item.trdStateGbn === '01') {
-          acc[0].push({
-            name: item.bplcNm, // not null
-            address: formatAddress(item.siteWhlAddr, item.rdnWhlAddr),
-            category: item.uptaeNm === '' ? null : item.uptaeNm,
-            phoneNumber: item.siteTel === '' ? null : item.siteTel,
-            location:
-              item.x && item.x !== '' && item.y && item.y !== ''
-                ? () => `ST_SetSRID(ST_Transform(ST_SetSRID(ST_MakePoint(${item.x}, ${item.y}), 5174), 4326), 4326)`
-                : null,
-            lastModTs: item.lastModTs,
-          });
+          acc[0].push(processed);
         } else {
-          console.log(item.bplcNm);
-          acc[1].push({
-            name: item.bplcNm, // not null
-            address: formatAddress(item.siteWhlAddr, item.rdnWhlAddr),
-          });
+          acc[1].push(processed);
         }
       }
       return acc;
     },
-    [[], []],
+    [[] as ProcessedData[], [] as ProcessedData[]],
   );
 
-  return [opened as ProcessedData[], closed as { name: string; address: string }[]];
+  return { opened, closed };
 };
 
 export { dataFormatting };

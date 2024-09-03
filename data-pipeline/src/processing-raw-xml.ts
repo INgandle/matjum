@@ -6,10 +6,10 @@
 import * as fs from 'fs/promises';
 import { join } from 'path';
 
-import { XMLParser, X2jOptions } from 'fast-xml-parser';
+import { XMLParser } from 'fast-xml-parser';
 
-import { ProcessedData } from './types/processed-data.type';
 import { dataFormatting } from './format-raw-data';
+import { ProcessedData } from './types/processed-data.type';
 
 /**
  * 파일을 읽어서 데이터를 가공한 후 반환
@@ -23,7 +23,8 @@ const readFile = async (parser: XMLParser, filePath: string): Promise<ProcessedD
     console.log(`Successfully read file: ${filePath}`);
 
     const parsedData = parser.parse(content).result.body.rows.row;
-    return dataFormatting(parsedData)[0];
+    const { opened } = dataFormatting(parsedData);
+    return opened;
   } catch (error) {
     console.error(`Error reading file ${filePath}:`, error);
     throw error;
@@ -38,13 +39,7 @@ const readFile = async (parser: XMLParser, filePath: string): Promise<ProcessedD
  */
 const readMultipleFiles = async (fileNames: string[]): Promise<ProcessedData[]> => {
   const filePaths = fileNames.map((fileName) => join(__dirname, '..', 'data', fileName));
-
-  // 전역 변수
-  const options: X2jOptions = {
-    ignoreAttributes: true,
-  };
-
-  const parser = new XMLParser(options);
+  const parser = new XMLParser({ ignoreAttributes: true });
 
   try {
     // Promise.all을 사용하여 병렬로 처리
