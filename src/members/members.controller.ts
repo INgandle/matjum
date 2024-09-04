@@ -50,7 +50,7 @@ export class MembersController {
    */
   @RefreshAuth()
   @Post('auth/refresh')
-  async refreshToken(@Request() req): Promise<{ newAccessToken: string }> {
+  async refreshToken(@Request() req): Promise<{ accessToken: string }> {
     const { userId } = req.user;
     return await this.authService.refreshAccessToken(userId);
   }

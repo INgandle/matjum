@@ -42,7 +42,7 @@ export class AuthService {
 
     //비밀번호 검증
     const isPasswordValid = await bcrypt.compare(password, member.password);
-    if (isPasswordValid == false) {
+    if (isPasswordValid === false) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -86,7 +86,7 @@ export class AuthService {
    * @param user
    * @returns
    */
-  async refreshAccessToken(userId: string): Promise<{ newAccessToken: string }> {
+  async refreshAccessToken(userId: string): Promise<{ accessToken: string }> {
     const member = await this.memberRepository.findOne({
       where: { id: userId },
       select: ['id', 'accountName', 'name'],
@@ -97,7 +97,7 @@ export class AuthService {
     }
 
     const payload = { sub: member.id, accountName: member.accountName, name: member.name };
-    const newAccessToken = this.jwtService.sign(payload, { expiresIn: JWT_ACCESS_EXPIRES_IN });
-    return { newAccessToken };
+    const accessToken = this.jwtService.sign(payload, { expiresIn: JWT_ACCESS_EXPIRES_IN });
+    return { accessToken };
   }
 }
