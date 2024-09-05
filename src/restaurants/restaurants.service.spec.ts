@@ -1,6 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Review } from '../entities/review.entity';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 
 import { Restaurant } from '../entities/restaurant.entity';
@@ -18,6 +19,10 @@ describe('RestaurantsService', () => {
         {
           provide: getRepositoryToken(Restaurant),
           useClass: Repository, // 실제 Repository 클래스를 사용합니다.
+        },
+        {
+          provide: getRepositoryToken(Review),
+          useClass: Repository,
         },
       ],
     }).compile();
