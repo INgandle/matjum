@@ -32,9 +32,20 @@ services:
     restart: unless-stopped # 예기치 않은 종료 시 재시작
     networks:
       - matjum-network
+  redis:
+    image: 'redis:7.4.0'
+    container_name: redis-matjum
+    restart: always
+    ports:
+      - '${REDIS_PORT}:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - matjum-network
 
 volumes:
   db_data:
+  redis_data:
 
 networks:
   matjum-network:
