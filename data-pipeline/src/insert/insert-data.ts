@@ -1,6 +1,7 @@
 import { CHUNK_SIZE } from '../common/common.constants';
 import { DataSourceManager } from '../common/data-source-manager';
 import { ProcessedData } from '../types/processed-data.type';
+import { processingRawXML } from './processing-raw-xml';
 
 /**
  * 5000개씩 끊어서 데이터를 insert
@@ -22,16 +23,19 @@ const chunkedInsert = async (dataSourceManager: DataSourceManager, data: Process
 /**
  * 초기 data를 insert하는 함수
  *
- * @param dataList
  */
-const insertData = async (dataList: ProcessedData[]): Promise<void> => {
+const insertData = async (): Promise<void> => {
   const dataSourceManager = DataSourceManager.getInstance();
 
   await dataSourceManager.initialize();
 
-  await chunkedInsert(dataSourceManager, dataList);
+  const data = await processingRawXML();
+
+  await chunkedInsert(dataSourceManager, data);
 
   await dataSourceManager.closeConnection();
 };
+
+insertData();
 
 export { insertData };

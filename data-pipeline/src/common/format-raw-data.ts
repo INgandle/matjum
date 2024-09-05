@@ -37,8 +37,8 @@ const dataFormatting = (data: RawData[]): { opened: ProcessedData[]; closed: Pro
         const processed = {
           name: item.bplcNm, // not null
           address: formatAddress(item.siteWhlAddr, item.rdnWhlAddr),
-          category: item.uptaeNm === '' ? null : item.uptaeNm,
-          phoneNumber: item.siteTel === '' ? null : item.siteTel,
+          category: item.uptaeNm && item.uptaeNm === '' ? '미분류' : item.uptaeNm,
+          phoneNumber: item.siteTel && item.siteTel === '' ? null : item.siteTel,
           location:
             item.x && item.x !== '' && item.y && item.y !== ''
               ? () => `ST_Transform(ST_SetSRID(ST_MakePoint(${item.x}, ${item.y}), 5174), 4326)`

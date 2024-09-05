@@ -24,6 +24,7 @@ const readFile = async (parser: XMLParser, filePath: string): Promise<ProcessedD
 
     const parsedData = parser.parse(content).result.body.rows.row;
     const { opened } = dataFormatting(parsedData);
+    console.log(opened.length);
     return opened;
   } catch (err) {
     console.error(`Error reading file ${filePath}:`, err);
@@ -38,8 +39,8 @@ const readFile = async (parser: XMLParser, filePath: string): Promise<ProcessedD
  * @returns
  */
 const readMultipleFiles = async (fileNames: string[]): Promise<ProcessedData[]> => {
-  const filePaths = fileNames.map((fileName) => join(__dirname, '..', 'data', fileName));
-  const parser = new XMLParser({ ignoreAttributes: true });
+  const filePaths = fileNames.map((fileName) => join(__dirname, '.. ', '..', '..', '..', 'data', fileName));
+  const parser = new XMLParser({ ignoreAttributes: true, parseTagValue: false });
 
   try {
     // Promise.all을 사용하여 병렬로 처리
