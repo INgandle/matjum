@@ -1,12 +1,31 @@
-import { Column, Entity, Index, OneToMany, Point, Unique } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  Point,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn,
+} from 'typeorm';
 
-import { BaseModel } from './base-model.entity';
-import { Review } from './review.entity';
-
+/**
+ * data-pipeline에서 사용하는 restaurant 엔티티
+ */
 @Entity()
 @Unique(['name', 'address']) // { name, address }가 같은 맛집은 중복으로 등록되지 않도록 설정
 @Index('idx_restaurant_last_mod_ts', ['lastModTs'])
-export class Restaurant extends BaseModel {
+export class Restaurant {
+  // insert 이전에 uuid를 생성하여 넣어준다.
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
@@ -23,7 +42,7 @@ export class Restaurant extends BaseModel {
   /**
    * 4326 - WGS 84 좌표계, 위도와 경도를 도(degrees) 단위로 표현함, 지구의 곡률을 고려하여 정확하게 거리를 계산하기 위해 필요함
    * 기본값은 0, 평면 좌표계
-   * */
+   */
   @Column({ type: 'geometry', nullable: true, srid: 4326 })
   location: Point;
 
@@ -33,8 +52,4 @@ export class Restaurant extends BaseModel {
   // api 서버에서 업데이트 된 시간 - lastModTs
   @Column()
   lastModTs: Date;
-
-  // 맛집에 작성된 리뷰
-  @OneToMany(() => Review, (review) => review.restaurant)
-  reviews: Review[];
 }
