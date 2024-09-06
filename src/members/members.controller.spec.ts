@@ -126,4 +126,22 @@ describe('MembersController', () => {
       expect(result).toEqual(memberResponseDto);
     });
   });
+
+  describe('updateSettings', () => {
+    const memberId = '60b8a1ba-1b9b-45f7-aa58-50d0c87da51f';
+    const updateMemberSettingsDto = {
+      lat: 37.564084,
+      lon: 126.977079,
+      isRecommendationEnabled: true,
+    } as UpdateMemberSettingsDto;
+
+    it('성공적으로 사용자 설정 업데이트', () => {
+      jest.spyOn(membersService, 'updateSettings').mockResolvedValue(undefined);
+
+      const result = controller.updateSettings(memberId, updateMemberSettingsDto);
+
+      expect(membersService.updateSettings).toHaveBeenCalledWith(memberId, updateMemberSettingsDto);
+      expect(result).toBeUndefined();
+    });
+  });
 });

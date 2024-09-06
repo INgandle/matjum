@@ -8,6 +8,7 @@ import { Member } from '../entities/member.entity';
 
 import { CreateMemberDto } from './dto/create-member.dto';
 import { MemberResponseDto } from './dto/member-response.dto';
+import { UpdateMemberSettingsDto } from './dto/update-member-settings.dto';
 import { MembersService } from './members.service';
 
 jest.mock('bcrypt');
@@ -139,6 +140,49 @@ describe('MembersService', () => {
       await expect(service.findOne(memberId)).rejects.toThrow(NotFoundException);
 
       expect(mockRepository.findOneBy).toHaveBeenCalledWith({ id: memberId });
+    });
+  });
+
+  describe('updateSettings', () => {
+    const memberId = '60b8a1ba-1b9b-45f7-aa58-50d0c87da51f';
+    const updateMemberSettingsDto = {
+      lat: 37.564084,
+      lon: 126.977079,
+      isRecommendationEnabled: true,
+    } as UpdateMemberSettingsDto;
+    const member = {
+      id: memberId,
+    } as unknown as Member;
+
+    it('성공적으로 사용자 설정 업데이트', async () => {
+      jest.spyOn(mockRepository, 'findOneBy').mockResolvedValue(member);
+      const updateSpy = jest.spyOn(mockRepository, 'update').mockResolvedValue(undefined);
+
+      const result = await service.updateSettings(memberId, updateMemberSettingsDto);
+      const locationFunc = updateSpy.mock.calls[0][1].location as () => string;
+
+      expect(mockRepository.findOneBy).toHaveBeenCalledWith({ id: memberId });
+      expect(mockRepository.update).toHaveBeenCalledWith(
+        { id: memberId },
+        {
+          location: expect.any(Function),
+          isRecommendationEnabled: updateMemberSettingsDto.isRecommendationEnabled,
+        },
+      );
+      expect(locationFunc()).toBe(
+        `ST_SetSRID(ST_MakePoint(${updateMemberSettingsDto.lon}, ${updateMemberSettingsDto.lat}),4326)`,
+      );
+      expect(result).toBeUndefined();
+    });
+
+    it('사용자가 존재하지 않을 경우 404', async () => {
+      jest.spyOn(mockRepository, 'findOneBy').mockResolvedValue(null);
+      jest.spyOn(mockRepository, 'update').mockResolvedValue(undefined);
+
+      await expect(service.updateSettings(memberId, updateMemberSettingsDto)).rejects.toThrow(NotFoundException);
+
+      expect(mockRepository.findOneBy).toHaveBeenCalledWith({ id: memberId });
+      expect(mockRepository.update).not.toHaveBeenCalled();
     });
   });
 });
