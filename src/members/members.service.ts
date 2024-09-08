@@ -46,7 +46,7 @@ export class MembersService {
    */
   async findOne(id: string): Promise<MemberResponseDto> {
     const member = await this.findMemberById(id);
-    const [lat, lon] = member.location?.coordinates;
+    const [lat, lon] = member.location?.coordinates || [null, null];
 
     return {
       id: member.id,
