@@ -1,11 +1,13 @@
 services:
   db:
-    container_name: matjum_db
-    image: postgres:16.4-alpine
+    container_name: matjum-db
+    build:
+      context: ./Dockerfiles/db
     restart: always
     env_file:
       - .env
     volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - db_data_dev:/var/lib/postgresql/data
     ports:
       - '${POSTGRES_PORT}:5432' # Host:Container 내부 포트
@@ -14,6 +16,15 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  redis:
+    image: 'redis:7.4.0'
+    container_name: redis-matjum
+    restart: always
+    ports:
+      - '${REDIS_PORT}:6379'
+    volumes:
+      - redis_data_dev:/data
 
 volumes:
   db_data_dev:
+  redis_data_dev:
